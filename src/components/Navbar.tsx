@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ArrowUpRight } from "lucide-react";
 
@@ -50,9 +51,12 @@ export function MagneticButton({
   );
 }
 
-export default function Navbar({ onBookClick }: { onBookClick: () => void }) {
+export default function Navbar({ onBookClick }: { onBookClick?: () => void }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
+
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -68,10 +72,20 @@ export default function Navbar({ onBookClick }: { onBookClick: () => void }) {
   }, []);
 
   const navLinks = [
-    { name: "Services", href: "#services" },
-    { name: "Work", href: "#work" },
-    { name: "Approach", href: "#approach" },
+    { name: "Home", href: "/" },
+    { name: "About Us", href: "/about" },
+    { name: "Our Services", href: "/services" },
+    { name: "Our Works", href: "/work" },
+    { name: "Contact Us", href: "/contact" },
   ];
+
+  const handleActionClick = () => {
+    if (onBookClick) {
+      onBookClick();
+    } else {
+      router.push("/book-consultation");
+    }
+  };
 
   return (
     <>
@@ -81,7 +95,7 @@ export default function Navbar({ onBookClick }: { onBookClick: () => void }) {
         transition={{ duration: 0.5 }}
         className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
           isScrolled
-            ? "bg-black/90 backdrop-blur-md py-4 border-b border-zinc-800"
+            ? "bg-black/90 backdrop-blur-md py-4 border-b border-zinc-800/80"
             : "bg-transparent py-6 border-b border-transparent"
         }`}
       >
@@ -106,26 +120,35 @@ export default function Navbar({ onBookClick }: { onBookClick: () => void }) {
 
           {/* Desktop Navigation Links */}
           <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                className="text-sm font-medium text-zinc-300 hover:text-yellow-400 transition-colors duration-200 relative py-1 group"
-              >
-                {link.name}
-                <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-yellow-400 group-hover:w-full transition-all duration-200" />
-              </Link>
-            ))}
+            {navLinks.map((link) => {
+              const isActive = pathname === link.href;
+              return (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  className={`text-sm font-medium transition-colors duration-200 relative py-1 group ${
+                    isActive ? "text-yellow-400 font-semibold" : "text-zinc-300 hover:text-yellow-400"
+                  }`}
+                >
+                  {link.name}
+                  <span
+                    className={`absolute bottom-0 left-0 h-[2px] bg-yellow-400 transition-all duration-200 ${
+                      isActive ? "w-full" : "w-0 group-hover:w-full"
+                    }`}
+                  />
+                </Link>
+              );
+            })}
           </div>
 
-          {/* CTA / Yellow Button */}
-          <div className="hidden md:block">
+          {/* Right Area: Action CTA */}
+          <div className="hidden md:flex items-center gap-4">
             <MagneticButton
-              onClick={onBookClick}
-              className="bg-yellow-400 text-black px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-yellow-300 transition-all duration-200 flex items-center gap-2 cursor-pointer shadow-sm active:scale-95"
+              onClick={handleActionClick}
+              className="bg-yellow-400 text-black px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-yellow-300 transition-all duration-200 flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-95"
             >
               Book Consultation
-              <ArrowUpRight className="w-4 h-4 stroke-[2.5]" />
+              <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5]" />
             </MagneticButton>
           </div>
 
@@ -148,30 +171,44 @@ export default function Navbar({ onBookClick }: { onBookClick: () => void }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-40 bg-black/95 backdrop-blur-xl flex flex-col justify-center px-8 md:hidden"
+            className="fixed inset-0 z-40 bg-black/98 backdrop-blur-2xl flex flex-col justify-center px-8 md:hidden"
           >
-            <div className="flex flex-col gap-8 text-left mt-8">
-              {navLinks.map((link) => (
-                <div key={link.name}>
-                  <Link
-                    href={link.href}
-                    onClick={() => setIsOpen(false)}
-                    className="text-3xl font-bold tracking-tight text-yellow-400 hover:text-white transition-colors"
-                  >
-                    {link.name}
-                  </Link>
-                </div>
-              ))}
+            <div className="flex flex-col gap-6 text-left mt-6">
+              {navLinks.map((link) => {
+                const isActive = pathname === link.href;
+                return (
+                  <div key={link.name}>
+                    <Link
+                      href={link.href}
+                      onClick={() => setIsOpen(false)}
+                      className={`text-2xl font-bold tracking-tight transition-colors ${
+                        isActive ? "text-yellow-400 font-extrabold" : "text-zinc-200 hover:text-yellow-400"
+                      }`}
+                    >
+                      {link.name}
+                    </Link>
+                  </div>
+                );
+              })}
+              <div className="pt-4 border-t border-zinc-800 flex flex-col gap-3">
+                <Link
+                  href="/start-project"
+                  onClick={() => setIsOpen(false)}
+                  className="text-lg font-medium text-zinc-300 hover:text-yellow-400"
+                >
+                  Start a Project
+                </Link>
+              </div>
               <div className="mt-4">
                 <button
                   onClick={() => {
                     setIsOpen(false);
-                    onBookClick();
+                    handleActionClick();
                   }}
-                  className="w-full text-center py-4 bg-yellow-400 text-black font-bold rounded-full hover:bg-yellow-300 transition-colors duration-200 flex items-center justify-center gap-2"
+                  className="w-full text-center py-3.5 bg-yellow-400 text-black font-bold rounded-full hover:bg-yellow-300 transition-colors duration-200 flex items-center justify-center gap-2"
                 >
                   Book Consultation
-                  <ArrowUpRight className="w-5 h-5 stroke-[2.5]" />
+                  <ArrowUpRight className="w-4 h-4 stroke-[2.5]" />
                 </button>
               </div>
             </div>

@@ -1,84 +1,83 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { 
-  Palette, 
-  Paintbrush, 
-  Megaphone, 
-  Brain, 
-  Monitor, 
-  Smartphone,
-  CheckCircle2 
-} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { CheckCircle2, ArrowRight } from "lucide-react";
 
 const services = [
   {
-    icon: Palette,
-    title: "Branding",
+    slug: "branding",
+    image: "/services/brand-identity.jpg",
+    title: "Brand Identity",
     description:
-      "Crafting distinctive visual identities, luxury brand strategies, design systems, and collateral materials that command prestige.",
-    features: ["Visual Identity Systems", "Brand Strategy & Guidelines", "Typography & Color Theory", "Brand Assets & Collateral"],
+      "Crafting distinctive visual identities, logos, color palettes, and brand guidelines that make your business memorable.",
+    features: ["Visual Identity Systems", "Brand Strategy & Guidelines", "Logo & Typography Design", "Brand Assets & Collateral"],
   },
   {
-    icon: Paintbrush,
+    slug: "graphic-design",
+    image: "/services/graphic-design.jpg",
     title: "Graphic Design",
     description:
-      "Creating high-impact visual artwork, marketing graphics, editorial layouts, and creative digital media tailored to your brand.",
-    features: ["Creative Art Direction", "Social Media & Marketing Graphics", "Print & Presentation Design", "Custom Vector Illustration"],
+      "Creating eye-catching marketing graphics, social media posts, pitch decks, and visual content tailored to your brand.",
+    features: ["Social Media Creatives", "Pitch Decks & Presentations", "Print & Packaging Design", "Custom Vector Graphics"],
   },
   {
-    icon: Megaphone,
+    slug: "digital-marketing",
+    image: "/services/digital-marketing.jpg",
     title: "Digital Marketing",
     description:
-      "Data-driven growth strategies, SEO frameworks, performance marketing, high-converting ad copy, and campaign analytics.",
-    features: ["Conversion Rate Optimization", "SEO & Content Architecture", "Social Media Campaigns", "Performance Telemetry"],
+      "Targeted digital marketing campaigns, SEO optimization, and social media strategies to reach more customers.",
+    features: ["Search Engine Optimization (SEO)", "Social Media Marketing", "Performance Ad Campaigns", "Audience Growth Strategies"],
   },
   {
-    icon: Brain,
-    title: "AI Agents",
+    slug: "ai-agents",
+    image: "/services/ai-agents.jpg",
+    title: "AI Agents & Automation",
     description:
-      "Engineering autonomous cognitive workflows, custom LLM orchestration, and intelligent AI tools to automate complex operations.",
-    features: ["Cognitive Automation", "Custom LLM Fine-Tuning", "RAG & Knowledge Bases", "Predictive Business Analytics"],
+      "Smart AI tools, chatbots, and workflow automation to save your team time and improve customer service.",
+    features: ["Custom AI Chatbots", "Workflow Automation", "Smart Lead Handling", "AI Business Integration"],
   },
   {
-    icon: Monitor,
+    slug: "web-development",
+    image: "/services/web-development.jpg",
     title: "Web Development",
     description:
-      "Architecting high-performance websites, modern Next.js platforms, fast web applications, and serverless web infrastructure.",
-    features: ["Full-Stack Next.js & React", "High-Speed Performance SEO", "Serverless API Integration", "Responsive Mobile-First UI"],
+      "Fast, responsive, and modern websites and web applications designed for seamless user experience on all devices.",
+    features: ["Modern Responsive Websites", "Fast Page Loading Speeds", "Mobile-Friendly Design", "Custom Web Applications"],
   },
   {
-    icon: Smartphone,
+    slug: "app-development",
+    image: "/services/app-development.jpg",
     title: "App Development",
     description:
-      "Building seamless native and cross-platform mobile applications for iOS and Android with sleek UI and powerful backend integration.",
-    features: ["iOS & Android App Engineering", "Cross-Platform Mobile Apps", "Intuitive UX/UI Workflows", "API & Database Sync"],
+      "Smooth mobile applications for iOS and Android with clean interfaces and reliable performance.",
+    features: ["iOS & Android Mobile Apps", "Clean User Interface (UI)", "Smooth Performance", "Reliable Backend Sync"],
   },
 ];
 
 export default function Services() {
   return (
-    <section id="services" className="relative py-24 md:py-32 bg-black z-10 px-6">
+    <section id="services" className="relative py-16 md:py-24 bg-black z-10 px-6 border-t border-zinc-900/60">
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 md:mb-20 gap-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 md:mb-16 gap-6">
           <div className="max-w-xl">
             <span className="text-xs font-bold uppercase tracking-widest text-yellow-400">
               Our Core Services
             </span>
             <h2 className="text-4xl md:text-5xl font-black tracking-tight text-yellow-400 mt-3 leading-tight uppercase">
-              WE BUILD. WE DESIGN. WE INNOVATE.
+              What We Do
             </h2>
           </div>
-          <p className="text-base md:text-lg text-white max-w-md font-normal leading-relaxed">
-            Delivering high-end digital solutions tailored to elevate your business. From brand design to intelligent app development.
+          <p className="text-base text-zinc-300 max-w-md font-normal leading-relaxed">
+            Delivering modern digital solutions tailored to help your business stand out and grow.
           </p>
         </div>
 
-        {/* Services Grid (3 Columns x 2 Rows) */}
+        {/* Services Grid with Images */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((service, index) => {
-            const Icon = service.icon;
             return (
               <motion.div
                 key={index}
@@ -86,35 +85,51 @@ export default function Services() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: index * 0.08 }}
-                className="bg-zinc-950 border border-zinc-800 hover:border-yellow-400/50 rounded-2xl p-8 flex flex-col justify-between group transition-colors duration-300"
+                className="bg-zinc-950 border border-zinc-800 hover:border-yellow-400/50 rounded-2xl p-6 flex flex-col justify-between group transition-all duration-300"
               >
                 <div>
-                  {/* Icon Frame */}
-                  <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-black border border-yellow-400/30 group-hover:border-yellow-400 group-hover:bg-yellow-400/10 transition-colors">
-                    <Icon className="w-6 h-6 text-yellow-400" />
+                  {/* Service Image Header */}
+                  <div className="relative w-full h-44 rounded-xl overflow-hidden mb-6 border border-zinc-800/80 bg-zinc-900">
+                    <Image
+                      src={service.image}
+                      alt={service.title}
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      referrerPolicy="no-referrer"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                   </div>
 
-                  {/* H3 Heading - Vibrant Yellow */}
-                  <h3 className="text-2xl font-bold tracking-tight text-yellow-400 mt-6 mb-3 uppercase">
+                  {/* Heading */}
+                  <h3 className="text-2xl font-bold tracking-tight text-yellow-400 mb-3">
                     {service.title}
                   </h3>
                   
-                  {/* Body text - Crisp White */}
-                  <p className="text-sm text-white font-normal leading-relaxed mb-6">
+                  {/* Body text */}
+                  <p className="text-sm text-zinc-300 font-normal leading-relaxed mb-6">
                     {service.description}
                   </p>
                 </div>
 
-                {/* Feature Bullet points */}
-                <div className="border-t border-zinc-800 pt-6 mt-auto">
-                  <ul className="flex flex-col gap-2.5">
+                {/* Feature Bullet points & Link */}
+                <div className="border-t border-zinc-900 pt-5 mt-auto flex flex-col gap-4">
+                  <ul className="flex flex-col gap-2">
                     {service.features.map((feature, fIdx) => (
-                      <li key={fIdx} className="flex items-center gap-2.5 text-xs text-white font-medium">
-                        <CheckCircle2 className="w-4 h-4 text-yellow-400 shrink-0" />
+                      <li key={fIdx} className="flex items-center gap-2 text-xs text-zinc-300 font-medium">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-yellow-400 shrink-0" />
                         <span>{feature}</span>
                       </li>
                     ))}
                   </ul>
+
+                  <Link
+                    href={`/services#${service.slug}`}
+                    className="mt-2 text-xs font-bold text-yellow-400 hover:text-white flex items-center gap-1.5 transition-colors group/link"
+                  >
+                    <span>View Service Details</span>
+                    <ArrowRight className="w-3.5 h-3.5 group-hover/link:translate-x-1 transition-transform" />
+                  </Link>
                 </div>
               </motion.div>
             );

@@ -5,8 +5,9 @@
   --color-foreground: #ffffff;
   --color-brand-yellow: #ffd700;
   
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-sans: var(--font-outfit), var(--font-sans), system-ui, -apple-system, sans-serif;
+  --font-display: var(--font-syne), var(--font-outfit), system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 :root {
@@ -14,11 +15,15 @@
   --foreground: #ffffff;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   background-color: #000000;
   color: #ffffff;
   overflow-x: hidden;
-  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-outfit), var(--font-sans), system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

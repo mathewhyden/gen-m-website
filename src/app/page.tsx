@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import Services from "@/components/Services";
 import Work from "@/components/Work";
+import GraphicDesign from "@/components/GraphicDesign";
 import Approach from "@/components/Approach";
 import BookingForm from "@/components/BookingForm";
 import Footer from "@/components/Footer";
@@ -25,12 +26,14 @@ export default function Home() {
       <main className="flex-grow w-full relative z-10 flex flex-col">
         <Hero 
           onBookClick={() => scrollToSection("booking")} 
-          onWorkClick={() => scrollToSection("work")} 
+          onWorkClick={() => scrollToSection("services")} 
         />
         
         <Services />
         
         <Work />
+        
+        <GraphicDesign />
         
         <Approach />
         

@@ -5,45 +5,45 @@ import { motion } from "framer-motion";
 const steps = [
   {
     num: "01",
-    title: "Discover & Align",
-    subtitle: "SYSTEM ANALYSIS & AUDITING",
+    title: "Discover & Understand",
+    subtitle: "UNDERSTANDING YOUR GOALS",
     description:
-      "We begin with detailed alignment workshops, auditing current infrastructure, analyzing critical user drop-off points, and identifying automation opportunities.",
+      "We start by discussing your vision, understanding your target audience, and planning the best approach for your project.",
   },
   {
     num: "02",
-    title: "Architect & Model",
-    subtitle: "SYSTEM DESIGN & SCHEMA PLANNING",
+    title: "Design & Plan",
+    subtitle: "CREATIVE WIREFRAMES & LAYOUTS",
     description:
-      "We design visual style guidelines, layout database schemas, choose API paradigms, and construct robust machine learning architecture flowcharts.",
+      "We create clean visual designs, user interfaces, wireframes, and project roadmaps tailored to your brand.",
   },
   {
     num: "03",
-    title: "Engineer & Implement",
-    subtitle: "DEVELOPMENT & SYSTEM INTEGRATION",
+    title: "Build & Develop",
+    subtitle: "HIGH-QUALITY DEVELOPMENT",
     description:
-      "Our team implements modular full-stack structures, fine-tunes deep learning engines, writes semantic markup, and coordinates high-performance servers.",
+      "Our team builds your website, application, or brand assets with high quality, speed, and modern technology.",
   },
   {
     num: "04",
-    title: "Optimize & Scale",
-    subtitle: "TELEMETRY AUDITING & BOTTLENECK ANALYSIS",
+    title: "Launch & Grow",
+    subtitle: "TESTING & CONTINUOUS SUPPORT",
     description:
-      "We monitor API performance thresholds, optimize response latency, run programmatic A/B marketing funnels, and scale infrastructure parameters.",
+      "We help you launch smoothly, test everything thoroughly, and support you as your business grows.",
   },
 ];
 
 export default function Approach() {
   return (
-    <section id="approach" className="relative py-24 md:py-32 bg-black z-10 px-6">
+    <section id="approach" className="relative py-16 md:py-24 bg-black z-10 px-6 border-t border-zinc-900/60">
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
-        <div className="mb-16 md:mb-20 max-w-xl">
+        <div className="mb-12 md:mb-16 max-w-xl">
           <span className="text-xs font-bold uppercase tracking-widest text-yellow-400">
-            Our Method
+            Our Process
           </span>
           <h2 className="text-4xl md:text-5xl font-black tracking-tight text-yellow-400 mt-3 leading-tight uppercase">
-            How We Engineer Excellence
+            How We Work
           </h2>
         </div>
 
@@ -56,7 +56,7 @@ export default function Approach() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: index * 0.1 }}
-              className="bg-zinc-950 border border-zinc-800 p-8 rounded-2xl flex flex-col justify-between"
+              className="bg-zinc-950 border border-zinc-800 p-8 rounded-2xl flex flex-col justify-between hover:border-yellow-400/40 transition-colors"
             >
               <div>
                 {/* Step number in bold Yellow */}
@@ -64,17 +64,17 @@ export default function Approach() {
                   {step.num}
                 </span>
 
-                <span className="text-xs font-mono text-white font-bold uppercase tracking-wider block mb-2">
+                <span className="text-xs font-mono text-zinc-400 font-bold uppercase tracking-wider block mb-2">
                   {step.subtitle}
                 </span>
 
-                {/* H3 Heading - MUST BE VIBRANT YELLOW */}
-                <h3 className="text-2xl font-bold text-yellow-400 mb-3 uppercase">
+                {/* H3 Heading */}
+                <h3 className="text-2xl font-bold text-white mb-3">
                   {step.title}
                 </h3>
 
-                {/* Description - CRISP WHITE */}
-                <p className="text-sm text-white font-normal leading-relaxed">
+                {/* Description */}
+                <p className="text-sm text-zinc-300 font-normal leading-relaxed">
                   {step.description}
                 </p>
               </div>

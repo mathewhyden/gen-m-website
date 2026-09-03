@@ -48,20 +48,20 @@ export default function GraphicDesign() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   return (
-    <section id="graphic-design" className="relative py-24 md:py-32 bg-black z-10 px-6 border-t border-zinc-900">
+    <section id="graphic-design" className="relative py-16 md:py-24 bg-black z-10 px-6 border-t border-zinc-900/60">
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 md:mb-20 gap-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 md:mb-16 gap-6">
           <div className="max-w-xl">
             <span className="text-xs font-bold uppercase tracking-widest text-yellow-400 flex items-center gap-2">
-              <ImageIcon className="w-4 h-4" /> Creative Media & Graphics
+              <ImageIcon className="w-4 h-4" /> Creative Visuals
             </span>
             <h2 className="text-4xl md:text-5xl font-black tracking-tight text-yellow-400 mt-3 leading-tight uppercase">
               Graphic Design Showcase
             </h2>
           </div>
-          <p className="text-base md:text-lg text-white max-w-md font-normal leading-relaxed">
-            High-impact brand brochures, event flyers, editorial layouts, and digital campaign graphics engineered for prestige.
+          <p className="text-base md:text-lg text-zinc-300 max-w-md font-normal leading-relaxed">
+            Take a look at our creative marketing brochures, event flyers, brand identity designs, and social media visuals.
           </p>
         </div>
 
@@ -75,7 +75,7 @@ export default function GraphicDesign() {
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: index * 0.08 }}
               onClick={() => setSelectedImage(work.image)}
-              className="bg-zinc-950 border border-zinc-800 hover:border-yellow-400/50 rounded-2xl p-5 flex flex-col group cursor-pointer transition-all duration-300"
+              className="bg-zinc-950 border border-zinc-800 hover:border-yellow-400/60 rounded-2xl p-5 flex flex-col group cursor-pointer transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-lg hover:shadow-yellow-400/5"
             >
               {/* Image Container */}
               <div className="aspect-[4/3] rounded-xl overflow-hidden bg-black border border-zinc-800 relative group-hover:border-yellow-400/40 transition-colors">

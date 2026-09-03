@@ -1,1 +1,6 @@
-<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1155 1000"><path d="m577.3 0 577.4 1000H0z" fill="#fff"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <rect width="512" height="512" rx="256" fill="#000000"/>
+  <circle cx="256" cy="256" r="230" stroke="#ffd700" stroke-width="12" stroke-opacity="0.3"/>
+  <!-- Stylized Geometric Gen-M logo mark in pure gold yellow -->
+  <path d="M130 380 L185 130 L256 280 L327 130 L382 380 L325 380 L290 220 L256 310 L222 220 L187 380 Z" fill="#ffd700"/>
+</svg>

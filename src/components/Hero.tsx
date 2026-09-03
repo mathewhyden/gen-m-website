@@ -12,7 +12,7 @@ export default function Hero({
   onWorkClick: () => void;
 }) {
   return (
-    <section className="relative min-h-[90vh] flex flex-col items-center justify-center bg-black px-6 pt-36 pb-20 overflow-hidden">
+    <section className="relative flex flex-col items-center justify-center bg-black px-6 pt-32 pb-16 md:pt-40 md:pb-20 overflow-hidden">
       {/* Main Container */}
       <motion.div
         initial={{ opacity: 0, y: 15 }}

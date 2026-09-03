@@ -1,29 +1,90 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Syne, Outfit, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
+import Providers from "@/components/Providers";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const syne = Syne({
+  variable: "--font-syne",
   subsets: ["latin"],
+  display: "swap",
+  weight: ["500", "600", "700", "800"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const outfit = Outfit({
+  variable: "--font-outfit",
   subsets: ["latin"],
+  display: "swap",
+  weight: ["300", "400", "500", "600", "700", "800"],
+});
+
+const plusJakarta = Plus_Jakarta_Sans({
+  variable: "--font-sans",
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
-  title: "Gen-M — Elite Digital Product Studio & AI Agency",
-  description: "We engineer digital masterpieces. Elevating global brands through brand identity, AI agents, SaaS development, and data-driven marketing campaigns.",
+  title: "Gen-M — Digital Product Studio & Creative Agency",
+  description: "We design modern websites, brand identities, graphic designs, and AI solutions to help businesses grow.",
+  icons: {
+    icon: [
+      { url: "/icon.png", sizes: "512x512", type: "image/png" },
+      { url: "/favicon.ico", sizes: "any" }
+    ],
+    shortcut: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
+  openGraph: {
+    title: "Gen-M — Digital Product Studio & Creative Agency",
+    description: "We design modern websites, brand identities, graphic designs, and AI solutions to help businesses grow.",
+    url: "https://gen-m-website.ai.studio",
+    siteName: "Gen-M",
+    images: [
+      {
+        url: "/og-square.png",
+        width: 600,
+        height: 600,
+        alt: "Gen-M Studio",
+      },
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Gen-M Digital Product Studio & Creative Agency",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Gen-M — Digital Product Studio & Creative Agency",
+    description: "We design modern websites, brand identities, graphic designs, and AI solutions to help businesses grow.",
+    images: ["/og-image.png"],
+  },
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${syne.variable} ${outfit.variable} ${plusJakarta.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/icon.png" type="image/png" sizes="512x512" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+        <meta property="og:image" content="/og-square.png" />
+        <meta property="og:image:width" content="600" />
+        <meta property="og:image:height" content="600" />
+        <meta property="og:image" content="/og-image.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+      </head>
+      <body className="min-h-full flex flex-col bg-black text-white font-sans">
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }

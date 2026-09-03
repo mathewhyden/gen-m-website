@@ -18,52 +18,52 @@ const webProjects: WebProject[] = [
     id: "hebe-art",
     title: "Hebe Art Studio",
     category: "Web Development / Art Portfolio",
-    description: "Bespoke digital gallery and portfolio platform created for Hebe Art Studio.",
+    description: "A custom digital gallery and portfolio platform created for contemporary visual art.",
     link: "https://hebeartstudio.netlify.app/portfolio",
-    image: "/graphic-design/graphic-work-1-1.jpg",
+    image: "/websites/hebe-art-studio.jpg",
   },
   {
     id: "cs-marcom",
     title: "CS Marcom",
     category: "Web Development / Marketing Agency",
-    description: "Modern corporate website and brand identity platform for CS Marcom.",
+    description: "A clean modern website and services showcase for CS Marcom Agency.",
     link: "https://csmarcom.pages.dev/",
-    image: "/graphic-design/graphic-work-18-1.jpg",
+    image: "/websites/cs-marcom.jpg",
   },
   {
     id: "cosmo-arts",
     title: "Cosmo Arts",
     category: "Web Development / Fine Arts",
-    description: "Creative media, visual art studio showcase, and fine arts digital experience.",
+    description: "Visual arts studio showcase and digital portfolio experience for modern artists.",
     link: "https://cosmoarts.pages.dev/",
-    image: "/graphic-design/graphic-work-10-1.jpg",
+    image: "/websites/cosmo-arts.jpg",
   },
   {
     id: "gospel-ministry",
     title: "Gospel Ministry Birthday Care",
     category: "Web Development / Community Portal",
-    description: "Interactive community engagement and member care portal for Believers Ministry.",
+    description: "An interactive community portal for celebrating member milestones and birthdays.",
     link: "https://gospel-ministry-believers-birthday-care.ai.studio/",
-    image: "/graphic-design/graphic-work-11-1.jpg",
+    image: "/websites/gospel-care.jpg",
   },
 ];
 
 export default function Work() {
   return (
-    <section id="work" className="relative py-24 md:py-32 bg-black z-10 px-6">
+    <section id="work" className="relative py-16 md:py-24 bg-black z-10 px-6 border-t border-zinc-900/60">
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 md:mb-20 gap-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 md:mb-16 gap-6">
           <div className="max-w-xl">
             <span className="text-xs font-bold uppercase tracking-widest text-yellow-400 flex items-center gap-2">
-              <Globe className="w-4 h-4" /> Live Web Applications
+              <Globe className="w-4 h-4" /> Live Websites
             </span>
             <h2 className="text-4xl md:text-5xl font-black tracking-tight text-yellow-400 mt-3 leading-tight uppercase">
               Web Development Showcase
             </h2>
           </div>
-          <p className="text-base md:text-lg text-white max-w-md font-normal leading-relaxed">
-            High-performance custom web applications, responsive digital platforms, and Next.js enterprise solutions.
+          <p className="text-base md:text-lg text-zinc-300 max-w-md font-normal leading-relaxed">
+            Explore our live client websites, designed with clean interfaces, fast loading times, and mobile responsiveness.
           </p>
         </div>
 
@@ -76,7 +76,7 @@ export default function Work() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: index * 0.1 }}
-              className="bg-zinc-950 border border-zinc-800 hover:border-yellow-400/50 rounded-2xl p-6 flex flex-col justify-between group transition-all duration-300"
+              className="bg-zinc-950 border border-zinc-800 hover:border-yellow-400/60 rounded-2xl p-6 flex flex-col justify-between group transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-lg hover:shadow-yellow-400/5"
             >
               {/* Image Container */}
               <a
