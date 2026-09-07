@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ArrowUpRight } from "lucide-react";
+import RopeThemeToggle from "./RopeThemeToggle";
 
 export function MagneticButton({
   children,
@@ -54,37 +55,59 @@ export function MagneticButton({
 export default function Navbar({ onBookClick }: { onBookClick?: () => void }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("home");
   const pathname = usePathname();
-
   const router = useRouter();
+
+  const navLinks = [
+    { name: "Home", href: "/", sectionId: "home" },
+    { name: "About Us", href: "/about", sectionId: "about" },
+    { name: "Our Services", href: "/services", sectionId: "services" },
+    { name: "Our Works", href: "/work", sectionId: "work" },
+    { name: "Contact Us", href: "/contact", sectionId: "contact" },
+  ];
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 20) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
+      setIsScrolled(window.scrollY > 20);
+
+      if (pathname === "/") {
+        const sections = ["contact", "work", "services", "about", "home"];
+        for (const sec of sections) {
+          const el = document.getElementById(sec);
+          if (el) {
+            const rect = el.getBoundingClientRect();
+            if (rect.top <= 220) {
+              setActiveSection(sec);
+              break;
+            }
+          }
+        }
       }
     };
 
     window.addEventListener("scroll", handleScroll);
+    handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [pathname]);
 
-  const navLinks = [
-    { name: "Home", href: "/" },
-    { name: "About Us", href: "/about" },
-    { name: "Our Services", href: "/services" },
-    { name: "Our Works", href: "/work" },
-    { name: "Contact Us", href: "/contact" },
-  ];
+  const handleNavClick = (e: React.MouseEvent, link: typeof navLinks[0]) => {
+    if (pathname === "/") {
+      e.preventDefault();
+      setIsOpen(false);
+      const el = document.getElementById(link.sectionId);
+      if (el) {
+        const yOffset = -75;
+        const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+        window.scrollTo({ top: y, behavior: "smooth" });
+      } else if (link.sectionId === "home") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+    }
+  };
 
   const handleActionClick = () => {
-    if (onBookClick) {
-      onBookClick();
-    } else {
-      router.push("/book-consultation");
-    }
+    router.push("/book-consultation");
   };
 
   return (
@@ -101,7 +124,16 @@ export default function Navbar({ onBookClick }: { onBookClick?: () => void }) {
       >
         <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-1 group">
+          <Link
+            href="/"
+            onClick={(e) => {
+              if (pathname === "/") {
+                e.preventDefault();
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }
+            }}
+            className="flex items-center gap-1 group"
+          >
             <span className="text-2xl font-black tracking-tight text-white group-hover:text-yellow-400 transition-colors">
               GEN-
             </span>
@@ -121,19 +153,20 @@ export default function Navbar({ onBookClick }: { onBookClick?: () => void }) {
           {/* Desktop Navigation Links */}
           <div className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => {
-              const isActive = pathname === link.href;
+              const isSectionActive = pathname === "/" ? activeSection === link.sectionId : pathname === link.href;
               return (
                 <Link
                   key={link.name}
-                  href={link.href}
+                  href={pathname === "/" ? `#${link.sectionId}` : `/#${link.sectionId}`}
+                  onClick={(e) => handleNavClick(e, link)}
                   className={`text-sm font-medium transition-colors duration-200 relative py-1 group ${
-                    isActive ? "text-yellow-400 font-semibold" : "text-zinc-300 hover:text-yellow-400"
+                    isSectionActive ? "text-yellow-400 font-semibold" : "text-zinc-300 hover:text-yellow-400"
                   }`}
                 >
                   {link.name}
                   <span
                     className={`absolute bottom-0 left-0 h-[2px] bg-yellow-400 transition-all duration-200 ${
-                      isActive ? "w-full" : "w-0 group-hover:w-full"
+                      isSectionActive ? "w-full" : "w-0 group-hover:w-full"
                     }`}
                   />
                 </Link>
@@ -141,7 +174,7 @@ export default function Navbar({ onBookClick }: { onBookClick?: () => void }) {
             })}
           </div>
 
-          {/* Right Area: Action CTA */}
+          {/* Right Area: Action CTA & Theme Pull Rope */}
           <div className="hidden md:flex items-center gap-4">
             <MagneticButton
               onClick={handleActionClick}
@@ -150,16 +183,24 @@ export default function Navbar({ onBookClick }: { onBookClick?: () => void }) {
               Book Consultation
               <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5]" />
             </MagneticButton>
+
+            {/* Pulling the rope animated theme toggle button */}
+            <div className="pt-0.5">
+              <RopeThemeToggle />
+            </div>
           </div>
 
-          {/* Mobile Menu Toggle Button */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden p-2 text-white hover:text-yellow-400 transition-colors focus:outline-none"
-            aria-label="Toggle Menu"
-          >
-            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+          {/* Mobile Right Controls: Theme Pull Rope & Menu Toggle */}
+          <div className="flex md:hidden items-center gap-3">
+            <RopeThemeToggle />
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="p-2 text-white hover:text-yellow-400 transition-colors focus:outline-none"
+              aria-label="Toggle Menu"
+            >
+              {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
         </div>
       </motion.nav>
 
@@ -175,14 +216,14 @@ export default function Navbar({ onBookClick }: { onBookClick?: () => void }) {
           >
             <div className="flex flex-col gap-6 text-left mt-6">
               {navLinks.map((link) => {
-                const isActive = pathname === link.href;
+                const isSectionActive = pathname === "/" ? activeSection === link.sectionId : pathname === link.href;
                 return (
                   <div key={link.name}>
                     <Link
-                      href={link.href}
-                      onClick={() => setIsOpen(false)}
+                      href={pathname === "/" ? `#${link.sectionId}` : `/#${link.sectionId}`}
+                      onClick={(e) => handleNavClick(e, link)}
                       className={`text-2xl font-bold tracking-tight transition-colors ${
-                        isActive ? "text-yellow-400 font-extrabold" : "text-zinc-200 hover:text-yellow-400"
+                        isSectionActive ? "text-yellow-400 font-extrabold" : "text-zinc-200 hover:text-yellow-400"
                       }`}
                     >
                       {link.name}
@@ -191,13 +232,15 @@ export default function Navbar({ onBookClick }: { onBookClick?: () => void }) {
                 );
               })}
               <div className="pt-4 border-t border-zinc-800 flex flex-col gap-3">
-                <Link
-                  href="/start-project"
-                  onClick={() => setIsOpen(false)}
-                  className="text-lg font-medium text-zinc-300 hover:text-yellow-400"
+                <button
+                  onClick={() => {
+                    setIsOpen(false);
+                    handleActionClick();
+                  }}
+                  className="text-left text-lg font-medium text-zinc-300 hover:text-yellow-400"
                 >
                   Start a Project
-                </Link>
+                </button>
               </div>
               <div className="mt-4">
                 <button

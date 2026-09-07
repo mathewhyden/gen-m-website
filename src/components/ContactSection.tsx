@@ -1,22 +1,21 @@
 "use client";
 
 import React, { useState } from "react";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import { 
-  Mail, 
-  Phone, 
-  MapPin, 
-  ExternalLink, 
-  Calendar, 
-  MessageCircle, 
-  Copy, 
-  Check, 
-  ArrowUpRight
+import {
+  Mail,
+  Phone,
+  MapPin,
+  ExternalLink,
+  Calendar,
+  MessageCircle,
+  Copy,
+  Check,
 } from "lucide-react";
 import Link from "next/link";
+import { ScrollReveal } from "./ScrollReveal";
+import { MaskWipeText, LetterSpacingExpand, TextShimmer } from "./TextAnimations";
 
-export default function ContactPage() {
+export default function ContactSection() {
   const mapLink = "https://maps.app.goo.gl/g1buKqDA5aJZxvA76";
   const [copied, setCopied] = useState(false);
 
@@ -28,30 +27,34 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="bg-black min-h-screen text-white font-sans relative flex flex-col w-full overflow-x-hidden">
-      <Navbar />
-
-      <main className="flex-grow w-full relative z-10 pt-32 pb-24 px-6 md:px-12 max-w-7xl mx-auto flex flex-col gap-12">
-        {/* Header */}
-        <section className="flex flex-col items-start max-w-3xl pt-8">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-900 border border-zinc-800 text-xs font-semibold uppercase tracking-wider text-yellow-400 mb-6">
-            <MessageCircle className="w-3.5 h-3.5 text-yellow-400" />
-            Get in Touch
+    <section
+      id="contact"
+      className="relative py-20 md:py-28 bg-black z-10 px-6 md:px-12 scroll-mt-20"
+    >
+      <div className="max-w-7xl mx-auto flex flex-col gap-12 md:gap-16">
+        {/* Header with Smooth Scroll Reveal - Restored Left-Aligned */}
+        <ScrollReveal delay={0.05} yOffset={20}>
+          <div className="flex flex-col items-start max-w-3xl">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-900 border border-zinc-800 text-xs font-semibold uppercase tracking-wider text-yellow-400 mb-5">
+              <MessageCircle className="w-3.5 h-3.5 text-yellow-400" />
+              <LetterSpacingExpand text="Contact &amp; Inquiries" delay={0.1} />
+            </div>
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight uppercase leading-[1.08] mb-5 text-white">
+              <MaskWipeText text="Let’s Work " delay={0.15} />
+              <TextShimmer text="Together." />
+            </h2>
+            <p className="text-base sm:text-lg text-zinc-300 leading-relaxed font-normal">
+              Have a question or looking to start a new project? Reach out to us via direct email, phone, WhatsApp, scheduled consultation, or visit our office.
+            </p>
           </div>
-          <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight leading-[1.1] mb-6">
-            Let’s Work <span className="text-yellow-400">Together.</span>
-          </h1>
-          <p className="text-base sm:text-lg text-zinc-400 leading-relaxed">
-            Have a question or looking to start a new project? Reach out to us via direct Gmail redirection, phone, WhatsApp, or visit our office.
-          </p>
-        </section>
+        </ScrollReveal>
 
         {/* Contact Information & Map Cards */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Company Details & Quick Actions */}
           <div className="lg:col-span-5 flex flex-col gap-6">
-            <div className="p-8 rounded-2xl bg-zinc-950 border border-zinc-800 flex flex-col gap-7">
-              <h2 className="text-2xl font-bold text-white">Company Contacts</h2>
+            <div className="p-7 md:p-8 rounded-2xl bg-zinc-950 border border-zinc-800 flex flex-col gap-7">
+              <h3 className="text-2xl font-bold text-white">Company Contacts</h3>
 
               {/* Email Item */}
               <div className="flex flex-col gap-3 pb-6 border-b border-zinc-900">
@@ -64,7 +67,7 @@ export default function ContactPage() {
                       Email Address
                     </span>
                     <div className="flex items-center gap-2 flex-wrap mt-0.5">
-                      <a 
+                      <a
                         href="mailto:admin.genm@gmail.com"
                         className="text-base font-semibold text-white hover:text-yellow-400 transition-colors break-all"
                         title="Send email to Gen-M"
@@ -102,7 +105,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <span className="text-xs font-mono uppercase tracking-wider text-zinc-500 block">
-                      Phone & WhatsApp (Primary)
+                      Phone &amp; WhatsApp (Primary)
                     </span>
                     <span className="text-base font-semibold text-white font-mono">
                       +91 87542 54943
@@ -138,7 +141,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <span className="text-xs font-mono uppercase tracking-wider text-zinc-500 block">
-                      Phone & WhatsApp (Secondary)
+                      Phone &amp; WhatsApp (Secondary)
                     </span>
                     <span className="text-base font-semibold text-white font-mono">
                       +91 97868 53498
@@ -167,13 +170,13 @@ export default function ContactPage() {
               </div>
             </div>
 
-            {/* Quick Action: Start Project or Book Call */}
+            {/* Quick Action: Schedule Meeting or Start Project */}
             <div className="p-6 rounded-2xl bg-zinc-950 border border-zinc-800 flex flex-col gap-3">
               <span className="text-xs font-bold uppercase tracking-wider text-yellow-400">
-                Prefer a Scheduled Meeting?
+                Prefer a Scheduled Consultation?
               </span>
               <p className="text-xs text-zinc-400 leading-relaxed">
-                Pick a convenient time for a 1-on-1 consultation to discuss your vision and roadmap.
+                Pick a convenient time for a 1-on-1 discovery meeting with our technical team.
               </p>
               <div className="flex gap-3 pt-2">
                 <Link
@@ -181,7 +184,7 @@ export default function ContactPage() {
                   className="w-full py-2.5 px-4 rounded-xl bg-yellow-400 text-black font-bold text-xs uppercase tracking-wider hover:bg-yellow-300 transition-colors flex items-center justify-center gap-1.5"
                 >
                   <Calendar className="w-3.5 h-3.5" />
-                  Book Call
+                  Book Consultation
                 </Link>
                 <Link
                   href="/book-consultation"
@@ -195,14 +198,14 @@ export default function ContactPage() {
 
           {/* Google Maps Location Section */}
           <div className="lg:col-span-7 flex flex-col gap-6">
-            <div className="p-8 rounded-2xl bg-zinc-950 border border-zinc-800 flex flex-col justify-between h-full gap-6">
+            <div className="p-7 md:p-8 rounded-2xl bg-zinc-950 border border-zinc-800 flex flex-col justify-between h-full gap-6">
               <div className="flex items-start justify-between flex-wrap gap-4">
                 <div>
                   <div className="flex items-center gap-2 text-yellow-400 text-xs font-mono font-bold uppercase tracking-wider mb-2">
                     <MapPin className="w-4 h-4 text-yellow-400" />
                     Our Office Location
                   </div>
-                  <h2 className="text-2xl font-bold text-white">Visit Our Company</h2>
+                  <h3 className="text-2xl font-bold text-white">Visit Our Studio</h3>
                   <p className="text-xs text-zinc-400 mt-1">
                     Find our office easily or navigate directly using Google Maps.
                   </p>
@@ -220,7 +223,7 @@ export default function ContactPage() {
               </div>
 
               {/* Map View Frame */}
-              <div className="relative w-full min-h-[380px] lg:min-h-[440px] rounded-xl overflow-hidden border border-zinc-800 bg-zinc-900 flex flex-col">
+              <div className="relative w-full min-h-[380px] lg:min-h-[420px] rounded-xl overflow-hidden border border-zinc-800 bg-zinc-900 flex flex-col">
                 <iframe
                   title="Gen-M Company Location Map"
                   src="https://maps.google.com/maps?q=9.9252,78.1198&t=&z=14&ie=UTF8&iwloc=&output=embed"
@@ -234,7 +237,7 @@ export default function ContactPage() {
                 <div className="bg-zinc-900/95 border-t border-zinc-800 p-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
                   <div className="flex items-center gap-2 text-zinc-300">
                     <MapPin className="w-4 h-4 text-yellow-400 shrink-0" />
-                    <span>Gen-M Company Headquarters</span>
+                    <span>Gen-M Studio Headquarters</span>
                   </div>
                   <a
                     href={mapLink}
@@ -249,10 +252,7 @@ export default function ContactPage() {
             </div>
           </div>
         </div>
-
-              </main>
-
-      <Footer />
-    </div>
+      </div>
+    </section>
   );
 }

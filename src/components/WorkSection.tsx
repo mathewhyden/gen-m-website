@@ -3,52 +3,45 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import {
-  MaskWipeText,
-  LetterSpacingExpand,
-  TextShimmer,
-  WordBlurIn,
-} from "@/components/TextAnimations";
+  Globe,
+  Image as ImageIcon,
+  X,
+  Sparkles,
+  Layers,
+} from "lucide-react";
+import { ScrollReveal } from "./ScrollReveal";
+import { MaskWipeText, LetterSpacingExpand, TextShimmer } from "./TextAnimations";
 import ResponsiveExpandCards, {
   defaultWebExpandCards,
   defaultGraphicExpandCards,
-} from "@/components/ResponsiveExpandCards";
-import { 
-  Globe, 
-  Image as ImageIcon,
-  Sparkles,
-  Layers,
-  X,
-} from "lucide-react";
+} from "./ResponsiveExpandCards";
 
-export default function OurWorkPage() {
+export default function WorkSection() {
   const [selectedTab, setSelectedTab] = useState<"all" | "web" | "graphic">("all");
   const [selectedGraphicImage, setSelectedGraphicImage] = useState<string | null>(null);
 
   return (
-    <div className="min-h-screen bg-black text-white selection:bg-yellow-400 selection:text-black">
-      <Navbar />
-
-      <main className="max-w-7xl mx-auto px-6 md:px-12 py-24 md:py-32 flex flex-col gap-14 md:gap-16">
-        {/* Page Header - Left-Aligned */}
-        <section className="flex flex-col items-start max-w-3xl pt-8">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-900 border border-zinc-800 text-xs font-semibold uppercase tracking-wider text-yellow-400 mb-4">
-            <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse" />
-            <LetterSpacingExpand text="Portfolio & Projects" delay={0.1} />
+    <section id="work" className="relative py-20 md:py-28 bg-black z-10 px-6 md:px-12 scroll-mt-20">
+      <div className="max-w-7xl mx-auto flex flex-col gap-14 md:gap-16">
+        {/* Section Header - Left-Aligned */}
+        <ScrollReveal delay={0.05} yOffset={20}>
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+            <div className="max-w-xl">
+              <span className="text-xs font-mono uppercase tracking-widest text-yellow-400 flex items-center gap-2 mb-3">
+                <Globe className="w-4 h-4 text-yellow-400" />
+                <LetterSpacingExpand text="Portfolio & Projects" delay={0.1} />
+              </span>
+              <h2 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight uppercase leading-[1.08] text-white">
+                <MaskWipeText text="Our " delay={0.1} />
+                <TextShimmer text="Work" />
+              </h2>
+            </div>
+            <p className="text-base text-zinc-300 max-w-md font-normal leading-relaxed">
+              Explore our live client websites, custom web applications, and creative visual design projects built for high commercial impact.
+            </p>
           </div>
-          <h1 className="text-4xl sm:text-6xl font-black tracking-tight uppercase leading-[1.08] mb-4 text-white">
-            <MaskWipeText text="Our " delay={0.15} />
-            <TextShimmer text="Work" />
-          </h1>
-          <p className="text-base sm:text-lg text-zinc-300 leading-relaxed font-normal">
-            <WordBlurIn
-              text="Explore our live client platforms, custom web applications, and creative graphic design showcases engineered for commercial impact."
-              delay={0.2}
-            />
-          </p>
-        </section>
+        </ScrollReveal>
 
         {/* Filter Tabs */}
         <div className="flex flex-wrap items-center gap-2 pb-2">
@@ -92,53 +85,57 @@ export default function OurWorkPage() {
 
         {/* 1. Web Development Showcase (Animated Expandable Cards) */}
         {(selectedTab === "all" || selectedTab === "web") && (
-          <section className="flex flex-col gap-6">
-            <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 border-b border-zinc-900 pb-3">
-              <div>
-                <span className="text-xs font-mono uppercase tracking-widest text-yellow-400 flex items-center gap-1.5">
-                  <Globe className="w-3.5 h-3.5" />
-                  Web Development
+          <ScrollReveal delay={0.1} yOffset={25}>
+            <div className="flex flex-col gap-6">
+              <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 border-b border-zinc-900 pb-3">
+                <div>
+                  <span className="text-xs font-mono uppercase tracking-widest text-yellow-400 flex items-center gap-1.5">
+                    <Globe className="w-3.5 h-3.5" />
+                    Web Development
+                  </span>
+                  <h3 className="text-2xl sm:text-3xl font-bold text-white mt-1">
+                    Live Websites &amp; Digital Platforms
+                  </h3>
+                </div>
+                <span className="text-xs font-mono text-zinc-500">
+                  Hover to expand card • Click for live platform
                 </span>
-                <h2 className="text-2xl sm:text-3xl font-bold text-white mt-1">
-                  Live Websites &amp; Platforms
-                </h2>
               </div>
-              <span className="text-xs font-mono text-zinc-500">
-                Hover to expand card • Click for live platform
-              </span>
-            </div>
 
-            {/* 5-Card Responsive Expandable Web Cards */}
-            <ResponsiveExpandCards cards={defaultWebExpandCards} />
-          </section>
+              {/* 5-Card Responsive Expandable Web Cards */}
+              <ResponsiveExpandCards cards={defaultWebExpandCards} />
+            </div>
+          </ScrollReveal>
         )}
 
         {/* 2. Graphic Design Showcase (Animated Expandable Cards) */}
         {(selectedTab === "all" || selectedTab === "graphic") && (
-          <section className="flex flex-col gap-6 pt-4">
-            <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 border-b border-zinc-900 pb-3">
-              <div>
-                <span className="text-xs font-mono uppercase tracking-widest text-yellow-400 flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5" />
-                  Visual &amp; Print Systems
+          <ScrollReveal delay={0.15} yOffset={25}>
+            <div className="flex flex-col gap-6 pt-4">
+              <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-2 border-b border-zinc-900 pb-3">
+                <div>
+                  <span className="text-xs font-mono uppercase tracking-widest text-yellow-400 flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5" />
+                    Visual &amp; Print Systems
+                  </span>
+                  <h3 className="text-2xl sm:text-3xl font-bold text-white mt-1">
+                    Graphic Design Showcase
+                  </h3>
+                </div>
+                <span className="text-xs font-mono text-zinc-500">
+                  Hover to expand • Click to inspect high-resolution
                 </span>
-                <h2 className="text-2xl sm:text-3xl font-bold text-white mt-1">
-                  Graphic Design Showcase
-                </h2>
               </div>
-              <span className="text-xs font-mono text-zinc-500">
-                Hover to expand • Click to inspect high-resolution
-              </span>
-            </div>
 
-            {/* 5-Card Responsive Expandable Graphic Design Cards */}
-            <ResponsiveExpandCards
-              cards={defaultGraphicExpandCards}
-              onImageZoom={(img) => setSelectedGraphicImage(img)}
-            />
-          </section>
+              {/* 5-Card Responsive Expandable Graphic Design Cards */}
+              <ResponsiveExpandCards
+                cards={defaultGraphicExpandCards}
+                onImageZoom={(img) => setSelectedGraphicImage(img)}
+              />
+            </div>
+          </ScrollReveal>
         )}
-      </main>
+      </div>
 
       {/* Lightbox Modal for Graphic Design Zoom */}
       <AnimatePresence>
@@ -176,8 +173,6 @@ export default function OurWorkPage() {
           </motion.div>
         )}
       </AnimatePresence>
-
-      <Footer />
-    </div>
+    </section>
   );
 }

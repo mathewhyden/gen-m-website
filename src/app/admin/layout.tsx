@@ -16,7 +16,7 @@ import {
   MailCheck, 
   LogOut, 
   ExternalLink,
-  Shield,
+  WalletCards,
   Menu,
   X
 } from "lucide-react";
@@ -50,6 +50,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const navItems = [
     { name: "Overview", href: "/admin", icon: LayoutDashboard },
+    { name: "Monthly Expenses", href: "/admin/expenses", icon: WalletCards },
     { name: "Projects", href: "/admin/projects", icon: FolderGit2 },
     { name: "Bookings", href: "/admin/bookings", icon: Calendar },
     { name: "Enquiries & Leads", href: "/admin/enquiries", icon: Inbox },

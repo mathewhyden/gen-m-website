@@ -3,17 +3,31 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { Send, Check, Mail, Phone, MessageCircle, Lock } from "lucide-react";
 
 export default function Footer() {
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
+  const pathname = usePathname();
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
     setSubscribed(true);
     setEmail("");
+  };
+
+  const handleScrollTo = (e: React.MouseEvent, id: string) => {
+    if (pathname === "/") {
+      e.preventDefault();
+      const el = document.getElementById(id);
+      if (el) {
+        const yOffset = -75;
+        const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+        window.scrollTo({ top: y, behavior: "smooth" });
+      }
+    }
   };
 
   const currentYear = new Date().getFullYear();
@@ -56,32 +70,54 @@ export default function Footer() {
             </span>
             <ul className="flex flex-col gap-2.5">
               <li>
-                <Link href="/about" className="text-sm text-zinc-300 hover:text-yellow-400 transition-colors duration-200">
+                <Link
+                  href="/#about"
+                  onClick={(e) => handleScrollTo(e, "about")}
+                  className="text-sm text-zinc-300 hover:text-yellow-400 transition-colors duration-200"
+                >
                   About Us
                 </Link>
               </li>
               <li>
-                <Link href="/services" className="text-sm text-zinc-300 hover:text-yellow-400 transition-colors duration-200">
+                <Link
+                  href="/#services"
+                  onClick={(e) => handleScrollTo(e, "services")}
+                  className="text-sm text-zinc-300 hover:text-yellow-400 transition-colors duration-200"
+                >
                   Our Services
                 </Link>
               </li>
               <li>
-                <Link href="/work" className="text-sm text-zinc-300 hover:text-yellow-400 transition-colors duration-200">
+                <Link
+                  href="/#work"
+                  onClick={(e) => handleScrollTo(e, "work")}
+                  className="text-sm text-zinc-300 hover:text-yellow-400 transition-colors duration-200"
+                >
                   Our Works
                 </Link>
               </li>
               <li>
-                <Link href="/start-project" className="text-sm text-zinc-300 hover:text-yellow-400 transition-colors duration-200">
+                <Link
+                  href="/book-consultation"
+                  className="text-sm text-zinc-300 hover:text-yellow-400 transition-colors duration-200"
+                >
                   Start a Project
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="text-sm text-zinc-300 hover:text-yellow-400 transition-colors duration-200">
+                <Link
+                  href="/#contact"
+                  onClick={(e) => handleScrollTo(e, "contact")}
+                  className="text-sm text-zinc-300 hover:text-yellow-400 transition-colors duration-200"
+                >
                   Contact Us
                 </Link>
               </li>
               <li>
-                <Link href="/book-consultation" className="text-sm text-zinc-300 hover:text-yellow-400 transition-colors duration-200">
+                <Link
+                  href="/book-consultation"
+                  className="text-sm text-zinc-300 hover:text-yellow-400 transition-colors duration-200"
+                >
                   Book Consultation
                 </Link>
               </li>

@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { 
-  DollarSign, 
   FolderGit2, 
   Calendar, 
   Inbox, 
@@ -15,15 +14,20 @@ import {
   Building, 
   ExternalLink,
   RefreshCw,
-  MessageSquare
+  MessageSquare,
+  TrendingUp,
+  Wallet,
+  Receipt,
+  ShieldCheck
 } from "lucide-react";
-import { AdminStats, Project, Booking, Enquiry } from "@/lib/types";
+import { AdminStats, Project, Booking, Enquiry, Payment } from "@/lib/types";
 
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [inquiries, setInquiries] = useState<Enquiry[]>([]);
+  const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastRefreshed, setLastRefreshed] = useState<string>("");
@@ -31,16 +35,18 @@ export default function AdminDashboardPage() {
   const refreshData = async () => {
     setIsRefreshing(true);
     try {
-      const [statsRes, projRes, bookRes, enqRes] = await Promise.all([
+      const [statsRes, projRes, bookRes, enqRes, payRes] = await Promise.all([
         fetch("/api/admin/stats").then(r => r.json()),
         fetch("/api/projects").then(r => r.json()),
         fetch("/api/bookings").then(r => r.json()),
         fetch("/api/admin/enquiries").then(r => r.json()),
+        fetch("/api/admin/payments").then(r => r.json()),
       ]);
       if (statsRes.stats) setStats(statsRes.stats);
       if (projRes.projects) setProjects(projRes.projects);
       if (bookRes.bookings) setBookings(bookRes.bookings);
       if (enqRes.enquiries) setInquiries(enqRes.enquiries);
+      if (payRes.payments) setPayments(payRes.payments);
       setLastRefreshed(new Date().toLocaleTimeString());
     } catch (err) {
       console.error(err);
@@ -99,32 +105,32 @@ export default function AdminDashboardPage() {
 
   const statCards = [
     {
-      title: "Consultations Booked",
-      value: bookings.length,
-      sub: `${bookings.filter(b => b.status === 'confirmed' || b.status === 'new').length} Pending / Confirmed`,
-      icon: Calendar,
-      color: "text-purple-400 bg-purple-500/10 border-purple-500/20",
+      title: "This Month Profit",
+      value: `₹${(stats?.monthlyProfit || 0).toLocaleString('en-IN')}`,
+      sub: `${stats?.currentMonthName || 'This Month'} (Net Profit: Revenue - Expenses)`,
+      icon: TrendingUp,
+      color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
     },
     {
-      title: "Inbound Leads & Enquiries",
-      value: inquiries.length,
-      sub: `${inquiries.filter(e => e.status === 'new').length} New Enquiries`,
-      icon: Inbox,
+      title: "This Month Revenue",
+      value: `₹${(stats?.monthlyRevenue || 0).toLocaleString('en-IN')}`,
+      sub: `All-time Cleared: ₹${(stats?.totalRevenue || 0).toLocaleString('en-IN')}`,
+      icon: Wallet,
       color: "text-yellow-400 bg-yellow-400/10 border-yellow-400/20",
+    },
+    {
+      title: "This Month Expenses",
+      value: `₹${(stats?.monthlyExpenses || 0).toLocaleString('en-IN')}`,
+      sub: `Lifetime: ₹${(stats?.totalExpenses || 0).toLocaleString('en-IN')}`,
+      icon: Receipt,
+      color: "text-red-400 bg-red-500/10 border-red-500/20",
     },
     {
       title: "Active Projects",
       value: stats?.activeProjects || 0,
-      sub: `${stats?.totalProjects || 0} Total in pipeline`,
+      sub: `${projects.filter(p => p.status === 'COMPLETED').length} Delivered Projects`,
       icon: FolderGit2,
       color: "text-blue-400 bg-blue-500/10 border-blue-500/20",
-    },
-    {
-      title: "Total Revenue",
-      value: `$${(stats?.totalRevenue || 0).toLocaleString()}`,
-      sub: "Cleared client payments",
-      icon: DollarSign,
-      color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
     },
   ];
 
@@ -194,6 +200,154 @@ export default function AdminDashboardPage() {
             </div>
           );
         })}
+      </div>
+
+      {/* HIGHLIGHTED SECTION: This Month Profit & Financial Performance in Rupees (₹) */}
+      <div className="p-6 md:p-8 rounded-3xl bg-zinc-950 border border-emerald-500/30 shadow-2xl relative overflow-hidden flex flex-col gap-6">
+        <div className="absolute -top-24 -right-24 w-72 h-72 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-zinc-900 pb-5">
+          <div className="flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-inner">
+              <TrendingUp className="w-6 h-6" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-400 font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+                  {stats?.currentMonthName || "This Month"} Financials (₹ INR)
+                </span>
+              </div>
+              <h2 className="text-2xl font-black text-white tracking-tight mt-1">
+                Studio Profit & Revenue Breakdown
+              </h2>
+              <p className="text-xs text-zinc-400 mt-0.5">
+                Calculated in Indian Rupees (₹) based on verified client invoices, collections, and recorded monthly expenses.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 flex-wrap">
+            <Link
+              href="/admin/expenses"
+              className="px-4 py-2 rounded-xl bg-red-500/10 border border-red-500/30 text-xs font-mono text-red-400 hover:bg-red-500/20 transition-colors flex items-center gap-1.5"
+            >
+              <Receipt className="w-3.5 h-3.5" /> Manage Expenses (செலவுகள்)
+            </Link>
+            <Link
+              href="/admin/invoices"
+              className="px-4 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-xs font-mono text-zinc-300 hover:text-yellow-400 hover:border-yellow-400 transition-colors flex items-center gap-1.5"
+            >
+              <Receipt className="w-3.5 h-3.5" /> Invoices
+            </Link>
+            <Link
+              href="/admin/payments"
+              className="px-4 py-2 rounded-xl bg-emerald-400 text-black font-bold text-xs uppercase tracking-wider hover:bg-emerald-300 transition-colors flex items-center gap-1.5 shadow-sm"
+            >
+              <Wallet className="w-3.5 h-3.5" /> All Payments (₹)
+            </Link>
+          </div>
+        </div>
+
+        {/* 3 Metric Cards for Profit, Gross, and Costs */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div className="p-5 rounded-2xl bg-zinc-900/70 border border-emerald-500/30 flex flex-col justify-between gap-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-mono text-emerald-400 font-bold uppercase tracking-wider">
+                This Month Net Profit (இந்த மாத நிகர லாபம்)
+              </span>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-semibold border border-emerald-500/30">
+                {stats?.profitMarginPercent || 0}% Net Margin
+              </span>
+            </div>
+            <div>
+              <span className="text-3xl sm:text-4xl font-black font-mono text-emerald-400 block tracking-tight">
+                ₹{(stats?.monthlyProfit || 0).toLocaleString('en-IN')}
+              </span>
+              <p className="text-[11px] text-zinc-400 mt-1.5">
+                Real studio earnings: Revenue (₹{(stats?.monthlyRevenue || 0).toLocaleString('en-IN')}) minus Monthly Expenses (₹{(stats?.monthlyExpenses || 0).toLocaleString('en-IN')}).
+              </p>
+            </div>
+          </div>
+
+          <div className="p-5 rounded-2xl bg-zinc-900/50 border border-zinc-800 flex flex-col justify-between gap-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-mono text-yellow-400 font-bold uppercase tracking-wider">
+                Gross Cleared Collections (மொத்த வசூல்)
+              </span>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-yellow-400/10 text-yellow-400 font-semibold border border-yellow-400/20">
+                This Month
+              </span>
+            </div>
+            <div>
+              <span className="text-3xl sm:text-4xl font-black font-mono text-white block tracking-tight">
+                ₹{(stats?.monthlyRevenue || 0).toLocaleString('en-IN')}
+              </span>
+              <p className="text-[11px] text-zinc-400 mt-1.5">
+                Total milestone collections cleared this calendar month. All-time revenue: <strong className="text-zinc-200">₹{(stats?.totalRevenue || 0).toLocaleString('en-IN')}</strong>
+              </p>
+            </div>
+          </div>
+
+          <div className="p-5 rounded-2xl bg-zinc-900/50 border border-zinc-800 flex flex-col justify-between gap-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-mono text-red-400 font-bold uppercase tracking-wider">
+                Monthly Expenses (மாத செலவுகள்)
+              </span>
+              <Link 
+                href="/admin/expenses" 
+                className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-red-500/10 text-red-400 font-semibold border border-red-500/20 hover:bg-red-500/20 transition-colors flex items-center gap-1"
+              >
+                + Add / View <ArrowUpRight className="w-2.5 h-2.5" />
+              </Link>
+            </div>
+            <div>
+              <span className="text-3xl sm:text-4xl font-black font-mono text-red-400 block tracking-tight">
+                ₹{(stats?.monthlyExpenses || 0).toLocaleString('en-IN')}
+              </span>
+              <p className="text-[11px] text-zinc-400 mt-1.5">
+                Hosting, software licenses, domain renewals, and studio expenses. Lifetime: <strong className="text-zinc-300">₹{(stats?.totalExpenses || 0).toLocaleString('en-IN')}</strong>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Recent Cleared Client Transactions in Rupees */}
+        {payments.length > 0 && (
+          <div className="pt-3 border-t border-zinc-900/90 flex flex-col gap-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-mono font-bold text-zinc-300 uppercase tracking-wider flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                Recent Verified Payments Received in Rupees (₹)
+              </span>
+              <span className="text-[11px] font-mono text-zinc-500">
+                {payments.filter(p => p.status === 'success').length} verified transactions
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {payments.slice(0, 3).map((pmt) => (
+                <div
+                  key={pmt.id}
+                  className="p-3.5 rounded-xl bg-zinc-900/40 border border-zinc-800/80 flex items-center justify-between hover:border-zinc-700 transition-colors"
+                >
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-xs font-bold text-white truncate">
+                      {pmt.payerName || pmt.clientName}
+                    </span>
+                    <span className="text-[10px] font-mono text-zinc-500">
+                      {pmt.paymentMethod || pmt.method?.toUpperCase() || "UPI / NETBANKING"} • {pmt.invoiceNumber}
+                    </span>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-sm font-mono font-extrabold text-emerald-400 block">
+                      +₹{pmt.amount.toLocaleString('en-IN')}
+                    </span>
+                    <span className="text-[9px] font-mono text-emerald-500/80">CLEARED</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* PROMINENT SECTION 1: Client Bookings & Discovery Consultations */}
@@ -369,11 +523,6 @@ export default function AdminDashboardPage() {
                       <a href={`tel:${enq.phone}`} className="flex items-center gap-1 text-yellow-400 hover:underline">
                         <Phone className="w-3.5 h-3.5" /> {enq.phone}
                       </a>
-                    )}
-                    {enq.budget && (
-                      <span className="text-zinc-500 font-mono">
-                        Budget: <strong className="text-zinc-300">{enq.budget}</strong>
-                      </span>
                     )}
                     {enq.timeline && (
                       <span className="text-zinc-500 font-mono">

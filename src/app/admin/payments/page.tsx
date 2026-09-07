@@ -87,9 +87,9 @@ export default function AdminPaymentsPage() {
 
                 <div className="text-right">
                   <span className="text-xl font-mono font-bold text-emerald-400 block">
-                    +${p.amount.toLocaleString()}
+                    +₹{p.amount.toLocaleString('en-IN')}
                   </span>
-                  <span className="text-[10px] font-mono text-zinc-500">{p.currency} CLEARED</span>
+                  <span className="text-[10px] font-mono text-zinc-500">{p.currency || 'INR'} CLEARED</span>
                 </div>
               </div>
             ))}

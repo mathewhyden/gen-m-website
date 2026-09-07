@@ -29,7 +29,7 @@ export default function AdminInvoicesPage() {
     clientEmail: "sindhu@hebeart.com",
     clientCompany: "Apex Group",
     description: "Phase 1 - Frontend Architecture & Design Milestone",
-    amount: 5000,
+    amount: 50000,
     dueDate: new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0],
   });
 
@@ -172,9 +172,9 @@ export default function AdminInvoicesPage() {
                 <div className="flex items-center gap-4">
                   <div className="text-right">
                     <span className="text-lg font-mono font-bold text-white block">
-                      ${(inv.totalAmount || inv.total || 0).toLocaleString()}
+                      ₹{(inv.totalAmount || inv.total || 0).toLocaleString('en-IN')}
                     </span>
-                    <span className="text-[10px] font-mono text-zinc-500">{inv.currency}</span>
+                    <span className="text-[10px] font-mono text-zinc-500">{inv.currency || 'INR'}</span>
                   </div>
 
                   <select
@@ -262,7 +262,7 @@ export default function AdminInvoicesPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex flex-col gap-1">
-                  <label className="text-[11px] font-mono text-zinc-400 uppercase">Amount (USD) *</label>
+                  <label className="text-[11px] font-mono text-zinc-400 uppercase">Amount (₹ INR) *</label>
                   <input
                     type="number"
                     required

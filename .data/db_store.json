@@ -1,4 +1,7 @@
 {
   "bookings": [],
-  "enquiries": []
+  "enquiries": [],
+  "expenses": [],
+  "payments": [],
+  "invoices": []
 }

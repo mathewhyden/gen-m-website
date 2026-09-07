@@ -218,8 +218,25 @@ export interface Testimonial {
   avatar?: string;
 }
 
+export interface Expense {
+  id: string;
+  title: string;
+  category: string;
+  amount: number;
+  date: string;
+  paymentMethod?: string;
+  notes?: string;
+  createdAt: string;
+}
+
 export interface AdminStats {
   totalRevenue: number;
+  monthlyRevenue: number;
+  monthlyProfit: number;
+  monthlyExpenses: number;
+  totalExpenses: number;
+  profitMarginPercent?: number;
+  currentMonthName?: string;
   activeProjects: number;
   totalProjects: number;
   totalBookings: number;

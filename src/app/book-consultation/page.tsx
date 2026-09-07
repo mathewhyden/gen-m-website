@@ -55,7 +55,7 @@ export default function BookConsultationPage() {
   };
 
   return (
-    <div className="bg-black min-h-screen text-white font-sans relative flex flex-col w-full selection:bg-yellow-400 selection:text-black">
+    <div className="bg-black min-h-screen text-white font-sans relative flex flex-col w-full overflow-x-hidden">
       <Navbar />
 
       <main className="flex-grow w-full relative z-10 pt-32 pb-24 px-6 md:px-12 max-w-4xl mx-auto flex flex-col gap-10">

@@ -212,8 +212,8 @@ export default function InvoiceViewPage() {
                 <tr key={idx} className="text-zinc-200 print:text-black">
                   <td className="p-4 font-sans font-medium">{item.description}</td>
                   <td className="p-4 text-center">{item.quantity}</td>
-                  <td className="p-4 text-right">${(item.unitPrice || item.rate || 0).toLocaleString()}</td>
-                  <td className="p-4 text-right font-bold">${item.amount.toLocaleString()}</td>
+                  <td className="p-4 text-right">₹{(item.unitPrice || item.rate || 0).toLocaleString('en-IN')}</td>
+                  <td className="p-4 text-right font-bold">₹{item.amount.toLocaleString('en-IN')}</td>
                 </tr>
               ))}
             </tbody>
@@ -230,15 +230,15 @@ export default function InvoiceViewPage() {
           <div className="w-full sm:w-64 flex flex-col gap-2 font-mono text-xs">
             <div className="flex justify-between text-zinc-400 print:text-gray-600">
               <span>Subtotal:</span>
-              <span>${invoice.subtotal.toLocaleString()}</span>
+              <span>₹{invoice.subtotal.toLocaleString('en-IN')}</span>
             </div>
             <div className="flex justify-between text-zinc-400 print:text-gray-600">
-              <span>Tax / VAT (0%):</span>
-              <span>$0.00</span>
+              <span>Tax / GST (0%):</span>
+              <span>₹0.00</span>
             </div>
             <div className="flex justify-between text-base font-bold text-white print:text-black pt-2 border-t border-zinc-800 print:border-gray-300">
               <span className="text-yellow-400 print:text-black">Total Due:</span>
-              <span>${(invoice.totalAmount || invoice.total || 0).toLocaleString()} {invoice.currency}</span>
+              <span>₹{(invoice.totalAmount || invoice.total || 0).toLocaleString('en-IN')} {invoice.currency || 'INR'}</span>
             </div>
           </div>
         </div>
@@ -276,7 +276,7 @@ export default function InvoiceViewPage() {
                 </div>
                 <h4 className="text-xl font-bold text-white">Payment Authorized!</h4>
                 <p className="text-xs text-zinc-400 font-mono">
-                  ${(invoice.totalAmount || invoice.total || 0).toLocaleString()} USD processed successfully.
+                  ₹{(invoice.totalAmount || invoice.total || 0).toLocaleString('en-IN')} INR processed successfully.
                 </p>
               </div>
             ) : (
@@ -388,7 +388,7 @@ export default function InvoiceViewPage() {
 
                 <div className="p-3 rounded-xl bg-zinc-900/60 border border-zinc-800/60 flex items-center justify-between text-xs font-mono">
                   <span className="text-zinc-400">Total Settlement:</span>
-                  <span className="text-yellow-400 font-bold">${(invoice.totalAmount || invoice.total || 0).toLocaleString()} USD</span>
+                  <span className="text-yellow-400 font-bold">₹{(invoice.totalAmount || invoice.total || 0).toLocaleString('en-IN')} INR</span>
                 </div>
 
                 <button
@@ -397,7 +397,7 @@ export default function InvoiceViewPage() {
                   className="w-full py-3 rounded-full bg-yellow-400 text-black font-bold text-xs uppercase tracking-wider hover:bg-yellow-300 transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                 >
                   <Lock className="w-3.5 h-3.5 stroke-[2.5]" />
-                  {paying ? "Processing Transaction..." : `Authorize $${(invoice.totalAmount || invoice.total || 0).toLocaleString()}`}
+                  {paying ? "Processing Transaction..." : `Authorize ₹${(invoice.totalAmount || invoice.total || 0).toLocaleString('en-IN')}`}
                 </button>
               </form>
             )}

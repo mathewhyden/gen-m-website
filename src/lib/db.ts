@@ -12,24 +12,37 @@ import {
   Testimonial,
   ProjectMilestone,
   ProjectFeedback,
-  AdminStats
+  AdminStats,
+  Expense
 } from './types';
 
 const STORE_PATH = path.join(process.cwd(), '.data', 'db_store.json');
 
-function saveStoreToDisk(bookings: Booking[], enquiries: Enquiry[]) {
+function saveStoreToDisk(
+  bookings: Booking[], 
+  enquiries: Enquiry[], 
+  expenses: Expense[] = [], 
+  payments: Payment[] = [], 
+  invoices: Invoice[] = []
+) {
   try {
     const dir = path.dirname(STORE_PATH);
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
-    fs.writeFileSync(STORE_PATH, JSON.stringify({ bookings, enquiries }, null, 2), 'utf-8');
+    fs.writeFileSync(STORE_PATH, JSON.stringify({ bookings, enquiries, expenses, payments, invoices }, null, 2), 'utf-8');
   } catch (err) {
     console.error('Failed to save store to disk:', err);
   }
 }
 
-function loadStoreFromDisk(): { bookings: Booking[]; enquiries: Enquiry[] } | null {
+function loadStoreFromDisk(): { 
+  bookings: Booking[]; 
+  enquiries: Enquiry[]; 
+  expenses?: Expense[];
+  payments?: Payment[];
+  invoices?: Invoice[];
+} | null {
   try {
     if (fs.existsSync(STORE_PATH)) {
       const raw = fs.readFileSync(STORE_PATH, 'utf-8');
@@ -49,6 +62,7 @@ interface GlobalDatabase {
   enquiries: Enquiry[];
   invoices: Invoice[];
   payments: Payment[];
+  expenses: Expense[];
   emailLogs: EmailLog[];
   services: ServiceItem[];
   testimonials: Testimonial[];
@@ -90,28 +104,6 @@ const initialUsers: User[] = [
     phone: '+91 87542 54943',
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
     createdAt: new Date(Date.now() - 30 * 86400000).toISOString(),
-  },
-  {
-    id: 'usr-client-1',
-    name: 'Sindhuja Ramesh',
-    email: 'sindhu@hebeart.com',
-    password: 'client123',
-    role: 'client',
-    company: 'Hebe Art Studio',
-    phone: '+91 98450 11223',
-    avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80',
-    createdAt: new Date(Date.now() - 20 * 86400000).toISOString(),
-  },
-  {
-    id: 'usr-client-2',
-    name: 'Carlos Santos',
-    email: 'carlos@csmarcom.com',
-    password: 'client123',
-    role: 'client',
-    company: 'CS Marcom Agency',
-    phone: '+1 415 555 0192',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
-    createdAt: new Date(Date.now() - 15 * 86400000).toISOString(),
   }
 ];
 
@@ -140,8 +132,9 @@ const initialProjects: Project[] = [
     liveUrl: 'https://hebeartstudio.netlify.app/portfolio',
     startDate: '2026-01-10',
     expectedDelivery: '2026-02-28',
-    amount: 3500,
-    currency: 'USD',
+    amount: 85000,
+    budget: '₹85,000',
+    currency: 'INR',
     progress: 100,
     status: 'COMPLETED',
     featured: true,
@@ -179,8 +172,9 @@ const initialProjects: Project[] = [
     liveUrl: 'https://csmarcom.pages.dev/',
     startDate: '2026-01-25',
     expectedDelivery: '2026-03-15',
-    amount: 4800,
-    currency: 'USD',
+    amount: 120000,
+    budget: '₹1,20,000',
+    currency: 'INR',
     progress: 85,
     status: 'CLIENT_REVIEW',
     featured: true,
@@ -216,8 +210,9 @@ const initialProjects: Project[] = [
     liveUrl: 'https://cosmoarts.pages.dev/',
     startDate: '2026-02-01',
     expectedDelivery: '2026-03-20',
-    amount: 2900,
-    currency: 'USD',
+    amount: 65000,
+    budget: '₹65,000',
+    currency: 'INR',
     progress: 70,
     status: 'IN_PROGRESS',
     featured: true,
@@ -252,8 +247,9 @@ const initialProjects: Project[] = [
     liveUrl: 'https://gospel-ministry-believers-birthday-care.ai.studio/',
     startDate: '2026-01-15',
     expectedDelivery: '2026-02-15',
-    amount: 3200,
-    currency: 'USD',
+    amount: 75000,
+    budget: '₹75,000',
+    currency: 'INR',
     progress: 100,
     status: 'COMPLETED',
     featured: true,
@@ -266,78 +262,11 @@ const initialProjects: Project[] = [
   }
 ];
 
-const initialInvoices: Invoice[] = [
-  {
-    id: 'inv-1',
-    invoiceNumber: 'GM-2026-001',
-    projectId: 'prj-1',
-    projectName: 'Hebe Art Studio Gallery & Platform',
-    clientId: 'usr-client-1',
-    clientName: 'Sindhuja Ramesh',
-    clientEmail: 'sindhu@hebeart.com',
-    clientCompany: 'Hebe Art Studio',
-    clientAddress: '42 Creative Avenue, Arts District, NY 10012',
-    items: [
-      { id: 'it-1', description: 'Luxury Minimalist Portfolio Architecture & Next.js Build', quantity: 1, rate: 2500, amount: 2500 },
-      { id: 'it-2', description: 'High-Contrast Masonry Gallery & Image CDN Pipeline', quantity: 1, rate: 700, amount: 700 },
-      { id: 'it-3', description: 'Consultation Portal & SEO Optimization', quantity: 1, rate: 300, amount: 300 },
-    ],
-    subtotal: 3500,
-    tax: 0,
-    discount: 0,
-    total: 3500,
-    currency: 'USD',
-    dueDate: '2026-03-05',
-    status: 'paid',
-    notes: 'Thank you for partnering with Gen-M. 30-day post-launch warranty included.',
-    paymentId: 'pay_GM_88192',
-    paidAt: '2026-02-26T16:45:00Z',
-    createdAt: '2026-02-25T10:00:00Z',
-  },
-  {
-    id: 'inv-2',
-    invoiceNumber: 'GM-2026-002',
-    projectId: 'prj-2',
-    projectName: 'CS Marcom Marketing Portal & CRM',
-    clientId: 'usr-client-2',
-    clientName: 'Carlos Santos',
-    clientEmail: 'carlos@csmarcom.com',
-    clientCompany: 'CS Marcom Agency',
-    clientAddress: '108 Market Street, Suite 400, San Francisco, CA',
-    items: [
-      { id: 'it-21', description: 'Performance Web Application Architecture', quantity: 1, rate: 3200, amount: 3200 },
-      { id: 'it-22', description: 'Interactive ROI Calculators & CRM Integration', quantity: 1, rate: 1600, amount: 1600 },
-    ],
-    subtotal: 4800,
-    tax: 0,
-    discount: 0,
-    total: 4800,
-    currency: 'USD',
-    dueDate: '2026-03-15',
-    status: 'sent',
-    notes: 'Payment due upon milestone approval. Supports Credit Card, Wire & UPI.',
-    createdAt: '2026-03-01T12:00:00Z',
-  }
-];
+const initialInvoices: Invoice[] = [];
 
-const initialPayments: Payment[] = [
-  {
-    id: 'pmt-1',
-    paymentId: 'pay_GM_88192',
-    invoiceId: 'inv-1',
-    invoiceNumber: 'GM-2026-001',
-    projectId: 'prj-1',
-    clientName: 'Sindhuja Ramesh',
-    clientEmail: 'sindhu@hebeart.com',
-    amount: 3500,
-    currency: 'USD',
-    gateway: 'stripe',
-    method: 'card',
-    status: 'success',
-    transactionRef: 'txn_str_98192837482',
-    createdAt: '2026-02-26T16:45:00Z',
-  }
-];
+const initialPayments: Payment[] = [];
+
+const initialExpenses: Expense[] = [];
 
 const initialBookings: Booking[] = [];
 
@@ -359,16 +288,16 @@ const initialEmailLogs: EmailLog[] = [
     subject: 'Invoice GM-2026-001 from Gen-M Studio',
     template: 'invoice_generated',
     status: 'delivered',
-    data: { invoiceNumber: 'GM-2026-001', amount: 3500 },
+    data: { invoiceNumber: 'GM-2026-001', amount: 85000 },
     sentAt: '2026-02-25T10:05:00Z',
   },
   {
     id: 'em-3',
     to: 'admin@gen-m.com',
-    subject: 'Payment Received: GM-2026-001 ($3,500)',
+    subject: 'Payment Received: GM-2026-001 (₹85,000)',
     template: 'payment_success_admin',
     status: 'delivered',
-    data: { invoiceNumber: 'GM-2026-001', amount: 3500 },
+    data: { invoiceNumber: 'GM-2026-001', amount: 85000 },
     sentAt: '2026-02-26T16:45:05Z',
   }
 ];
@@ -381,7 +310,7 @@ const initialServices: ServiceItem[] = [
     iconName: 'Palette',
     features: ['Brand Guidelines & Systems', 'Typography & Color Mastery', 'Vector Logos & Marks', 'Print & Digital Collateral'],
     badge: 'Core Foundation',
-    priceRange: 'From $1,500',
+    priceRange: 'From ₹25,000',
   },
   {
     id: 'srv-graphic',
@@ -389,8 +318,8 @@ const initialServices: ServiceItem[] = [
     description: 'High-impact visual creatives, pitch decks, exhibition visuals, marketing assets, and product packaging crafted with precision.',
     iconName: 'Sparkles',
     features: ['Campaign & Social Creatives', 'Pitch Decks & Presentations', 'Packaging & Print Production', 'Exhibition & Vector Art'],
-    badge: 'Creative Craft',
-    priceRange: 'From $800',
+    badge: 'Visual Design',
+    priceRange: 'From ₹15,000',
   },
   {
     id: 'srv-marketing',
@@ -398,8 +327,8 @@ const initialServices: ServiceItem[] = [
     description: 'Data-driven growth funnels, conversion rate optimization, search ranking dominance, and precision paid ad campaigns.',
     iconName: 'TrendingUp',
     features: ['Conversion Funnel Architecture', 'Technical SEO Mastery', 'Performance Ad Scaling', 'Lifecycle Email Marketing'],
-    badge: 'High ROI',
-    priceRange: 'From $1,200/mo',
+    badge: 'Marketing & Growth',
+    priceRange: 'From ₹20,000/mo',
   },
   {
     id: 'srv-ai',
@@ -408,7 +337,7 @@ const initialServices: ServiceItem[] = [
     iconName: 'Brain',
     features: ['Autonomous AI Agent Fleets', 'Internal Workflow Automation', 'Custom LLM Fine-Tuning', 'Predictive Business Logic'],
     badge: 'Next-Gen',
-    priceRange: 'From $2,500',
+    priceRange: 'From ₹45,000',
   },
   {
     id: 'srv-web',
@@ -417,7 +346,7 @@ const initialServices: ServiceItem[] = [
     iconName: 'Monitor',
     features: ['Next.js 16 & React 19', 'Sub-second Page Speeds', 'Custom Admin Dashboards', 'Headless CMS & Commerce'],
     badge: 'Flagship',
-    priceRange: 'From $2,000',
+    priceRange: 'From ₹35,000',
   },
   {
     id: 'srv-app',
@@ -426,7 +355,7 @@ const initialServices: ServiceItem[] = [
     iconName: 'Smartphone',
     features: ['iOS & Android Apps', 'Cross-Platform Experience', 'Real-time Push Notifications', 'API & Database Integration'],
     badge: 'Full-Stack',
-    priceRange: 'From $3,000',
+    priceRange: 'From ₹50,000',
   }
 ];
 
@@ -466,10 +395,11 @@ function getDatabase(): GlobalDatabase {
     globalForDb.__genm_db = {
       users: initialUsers,
       projects: initialProjects,
-      bookings: saved?.bookings || initialBookings,
-      enquiries: saved?.enquiries || initialEnquiries,
-      invoices: initialInvoices,
-      payments: initialPayments,
+      bookings: saved?.bookings || [],
+      enquiries: saved?.enquiries || [],
+      invoices: saved?.invoices || [],
+      payments: saved?.payments || [],
+      expenses: saved?.expenses || [],
       emailLogs: initialEmailLogs,
       services: initialServices,
       testimonials: initialTestimonials,
@@ -477,9 +407,13 @@ function getDatabase(): GlobalDatabase {
     };
   }
   const dbInstance = globalForDb.__genm_db;
-  // Ensure dummy bookings and enquiries are purged
+  // Keep customer list clean without artificial fake clients
+  dbInstance.users = (dbInstance.users || []).filter(u => u.role === 'admin');
   dbInstance.bookings = (dbInstance.bookings || []).filter(b => b.id !== 'bk-1' && b.id !== 'bk-2');
   dbInstance.enquiries = (dbInstance.enquiries || []).filter(e => e.id !== 'enq-1' && e.id !== 'enq-2' && e.email !== 'test@example.com');
+  if (!dbInstance.expenses) dbInstance.expenses = [];
+  if (!dbInstance.payments) dbInstance.payments = [];
+  if (!dbInstance.invoices) dbInstance.invoices = [];
   // Ensure admin user password is up to date
   const adminUser = dbInstance.users.find(u => u.email.toLowerCase() === 'admin.genm@gmail.com');
   if (adminUser) {
@@ -750,7 +684,7 @@ export const db = {
     });
     db.logEmail({
       to: 'admin@gen-m.com',
-      subject: `Payment Verified: ${invoice.invoiceNumber} - $${newPayment.amount}`,
+      subject: `Payment Verified: ${invoice.invoiceNumber} - ₹${newPayment.amount.toLocaleString('en-IN')}`,
       template: 'payment_success_admin',
       data: { paymentId: newPayment.paymentId, amount: newPayment.amount }
     });
@@ -851,6 +785,31 @@ export const db = {
     getDatabase().testimonials = testimonials;
   },
 
+  // Expenses Tracker
+  getExpenses: (): Expense[] => getDatabase().expenses || [],
+  getExpenseById: (id: string): Expense | undefined => (getDatabase().expenses || []).find(e => e.id === id),
+  createExpense: (expense: Omit<Expense, 'id' | 'createdAt'>): Expense => {
+    const dbInst = getDatabase();
+    if (!dbInst.expenses) dbInst.expenses = [];
+    const newExp: Expense = {
+      ...expense,
+      id: `exp-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      createdAt: new Date().toISOString(),
+    };
+    dbInst.expenses.unshift(newExp);
+    saveStoreToDisk(dbInst.bookings, dbInst.enquiries, dbInst.expenses, dbInst.payments, dbInst.invoices);
+    return newExp;
+  },
+  deleteExpense: (id: string): boolean => {
+    const dbInst = getDatabase();
+    if (!dbInst.expenses) return false;
+    const index = dbInst.expenses.findIndex(e => e.id === id);
+    if (index === -1) return false;
+    dbInst.expenses.splice(index, 1);
+    saveStoreToDisk(dbInst.bookings, dbInst.enquiries, dbInst.expenses, dbInst.payments, dbInst.invoices);
+    return true;
+  },
+
   // Dashboard Aggregates
   getAdminStats: () => {
     const data = getDatabase();
@@ -859,21 +818,66 @@ export const db = {
     const upcomingBookings = data.bookings.filter(b => b.status === 'confirmed' || b.status === 'new').length;
     const activeProjects = data.projects.filter(p => !['COMPLETED'].includes(p.status)).length;
     const reviewProjects = data.projects.filter(p => p.status === 'CLIENT_REVIEW' || p.status === 'CHANGES_REQUESTED').length;
-    const pendingInvoices = data.invoices.filter(i => i.status !== 'paid' && i.status !== 'cancelled').length;
-    const totalRevenue = data.payments.filter(p => p.status === 'success').reduce((acc, curr) => acc + curr.amount, 0);
+    const pendingInvoices = (data.invoices || []).filter(i => i.status !== 'paid' && i.status !== 'cancelled').length;
+    
+    const successfulPayments = (data.payments || []).filter(p => p.status === 'success');
+    const totalRevenue = successfulPayments.reduce((acc, curr) => acc + (curr.amount || 0), 0);
+
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth();
+    const monthNames = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+    const currentMonthName = `${monthNames[currentMonth]} ${currentYear}`;
+
+    // Filter payments received in the current month
+    const thisMonthPayments = successfulPayments.filter(p => {
+      const dateStr = p.createdAt || p.timestamp;
+      if (!dateStr) return false;
+      const d = new Date(dateStr);
+      return d.getFullYear() === currentYear && d.getMonth() === currentMonth;
+    });
+
+    const monthlyRevenue = thisMonthPayments.reduce((acc, curr) => acc + (curr.amount || 0), 0);
+
+    // Calculate actual expenses for the current month
+    const allExpenses = data.expenses || [];
+    const thisMonthExpenses = allExpenses.filter(e => {
+      if (!e.date) return false;
+      const d = new Date(e.date);
+      return d.getFullYear() === currentYear && d.getMonth() === currentMonth;
+    });
+    const monthlyExpenses = thisMonthExpenses.reduce((acc, curr) => acc + (curr.amount || 0), 0);
+    const totalExpenses = allExpenses.reduce((acc, curr) => acc + (curr.amount || 0), 0);
+
+    // Real Net profit for this month (in Rupees): Revenue - Expenses
+    const monthlyProfit = monthlyRevenue - monthlyExpenses;
+    const profitMarginPercent = monthlyRevenue > 0
+      ? Math.round((monthlyProfit / monthlyRevenue) * 100)
+      : (monthlyExpenses > 0 ? -100 : 0);
 
     return {
       totalEnquiries,
       newEnquiries,
       upcomingBookings,
+      totalBookings: data.bookings.length,
       activeProjects,
+      totalProjects: data.projects.length,
       reviewProjects,
       pendingInvoices,
       totalRevenue,
+      monthlyRevenue,
+      monthlyProfit,
+      monthlyExpenses,
+      totalExpenses,
+      profitMarginPercent,
+      currentMonthName,
       recentProjects: data.projects.slice(0, 5),
       recentBookings: data.bookings.slice(0, 5),
       recentEnquiries: data.enquiries.slice(0, 5),
-      recentPayments: data.payments.slice(0, 5),
+      recentPayments: (data.payments || []).slice(0, 5),
     };
   }
 };

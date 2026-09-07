@@ -245,9 +245,9 @@ export default function ClientDashboardPage() {
                     <div className="flex items-center gap-4">
                       <div className="text-right">
                         <span className="text-lg font-mono font-bold text-white block">
-                          ${(inv.totalAmount || inv.total || 0).toLocaleString()}
+                          ₹{(inv.totalAmount || inv.total || 0).toLocaleString('en-IN')}
                         </span>
-                        <span className="text-[10px] font-mono text-zinc-500">USD ({inv.currency})</span>
+                        <span className="text-[10px] font-mono text-zinc-500">INR ({inv.currency || 'INR'})</span>
                       </div>
 
                       <Link

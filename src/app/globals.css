@@ -17,15 +17,203 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 body {
   background-color: #000000;
   color: #ffffff;
   overflow-x: hidden;
+  max-width: 100vw;
+  position: relative;
   font-family: var(--font-outfit), var(--font-sans), system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================================
+   CURSOR & SELECTION NONE (as requested)
+   Disables text selection highlight and text selection cursor,
+   preserving selection and text cursor only in input fields & textareas.
+   ============================================================ */
+*, *::before, *::after {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+body, html, p, h1, h2, h3, h4, h5, h6, span, div, section, article {
+  cursor: default;
+}
+
+a, button, [role="button"], input[type="submit"], input[type="button"], label, select, summary, .cursor-pointer {
+  cursor: pointer !important;
+}
+
+/* Allow selection and text cursor in form controls */
+input, textarea, [contenteditable="true"] {
+  cursor: text !important;
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  user-select: text !important;
+}
+
+/* Selection highlight none */
+::selection {
+  background: transparent;
+  color: inherit;
+}
+::-moz-selection {
+  background: transparent;
+  color: inherit;
+}
+
+/* ============================================================
+   3D PAGE FLIP UTILITIES (Who We Are Section)
+   ============================================================ */
+.perspective-container {
+  perspective: 1400px;
+  -webkit-perspective: 1400px;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+/* Book page crease and spine shadow */
+.page-spine-shadow {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.45) 0%,
+    rgba(0, 0, 0, 0.15) 6%,
+    transparent 15%
+  );
+}
+
+.page-reverse-spine {
+  background: linear-gradient(
+    270deg,
+    rgba(0, 0, 0, 0.45) 0%,
+    rgba(0, 0, 0, 0.15) 6%,
+    transparent 15%
+  );
+}
+
+/* Page curl corner */
+.page-curl-corner {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 24px), calc(100% - 24px) 100%, 0 100%);
+}
+
+/* ============================================================
+   SMOOTH PAGE TEXT TRANSITIONS
+   ============================================================ */
+@keyframes text-fade-glide {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-text-glide {
+  animation: text-fade-glide 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Radiant Gold Shimmer Sweep (After Effects Typography) */
+@keyframes shimmer-sweep {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.animate-shimmer-sweep {
+  animation: shimmer-sweep 5s linear infinite;
+}
+
+/* ============================================================
+   BEDIMCODE EXPANDABLE CARDS ANIMATION (Our Work Section)
+   From: "This Expandable Cards Animation Feels Illegal in CSS"
+   ============================================================ */
+.bedimcode-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.5rem;
+  background-color: #09090b;
+  border: 1px solid rgba(39, 39, 42, 0.9);
+  transition: border-color 0.4s ease, box-shadow 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bedimcode-card:hover {
+  border-color: rgba(250, 204, 21, 0.55);
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.9), 0 0 25px -4px rgba(250, 204, 21, 0.12);
+  transform: translateY(-4px);
+}
+
+.bedimcode-card .card__img-wrap {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.bedimcode-card:hover .card__img-wrap img {
+  transform: scale(1.06);
+}
+
+.bedimcode-card .card__data {
+  position: absolute;
+  left: 0.875rem;
+  right: 0.875rem;
+  bottom: -4.5rem;
+  padding: 1.25rem 1.35rem;
+  background: rgba(9, 9, 11, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(250, 204, 21, 0.2);
+  border-radius: 1.15rem;
+  box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.85);
+  opacity: 0.92;
+  transition: bottom 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.35s ease,
+              border-color 0.35s ease,
+              box-shadow 0.35s ease;
+  z-index: 20;
+}
+
+@media (min-width: 640px) {
+  .bedimcode-card .card__data {
+    left: 1.25rem;
+    right: 1.25rem;
+    bottom: -4.75rem;
+    padding: 1.35rem 1.5rem;
+  }
+}
+
+.bedimcode-card:hover .card__data,
+.bedimcode-card.active-mobile .card__data {
+  bottom: 1rem;
+  opacity: 1;
+  border-color: rgba(250, 204, 21, 0.6);
+  box-shadow: 0 20px 42px -10px rgba(0, 0, 0, 0.95), 0 0 24px -2px rgba(250, 204, 21, 0.2);
 }
 
 /* Minimalist Glass & Card Utilities */
@@ -53,6 +241,9 @@ body {
 ::-webkit-scrollbar-track {
   background: #000000;
 }
+html.light ::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
 ::-webkit-scrollbar-thumb {
   background: rgba(255, 215, 0, 0.2);
   border-radius: 9999px;
@@ -65,4 +256,204 @@ body {
 .tracking-ultra-tight {
   letter-spacing: -0.04em;
 }
+
+/* Continuous Marquee Animations */
+@keyframes marquee-left {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes marquee-right {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}
+
+.animate-marquee-left {
+  display: flex;
+  width: max-content;
+  animation: marquee-left 28s linear infinite;
+}
+
+.animate-marquee-right {
+  display: flex;
+  width: max-content;
+  animation: marquee-right 28s linear infinite;
+}
+
+.animate-marquee-left:hover,
+.animate-marquee-right:hover {
+  animation-play-state: paused;
+}
+
+/* ============================================================
+   LIGHT THEME ADAPTATION
+   Dynamically transforms the entire site into a crisp, luxurious
+   light environment when .light is active on <html>.
+   ============================================================ */
+
+html.light,
+html.light body {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+/* Backgrounds */
+html.light .bg-black {
+  background-color: #f8fafc !important;
+}
+
+html.light .bg-zinc-950 {
+  background-color: #ffffff !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05) !important;
+}
+
+html.light .bg-zinc-900 {
+  background-color: #f1f5f9 !important;
+}
+
+html.light .bg-zinc-900\/70,
+html.light .bg-zinc-900\/80,
+html.light .bg-zinc-900\/90,
+html.light .bg-zinc-900\/95 {
+  background-color: rgba(241, 245, 249, 0.9) !important;
+}
+
+html.light .bg-zinc-950\/80,
+html.light .bg-zinc-950\/90 {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+}
+
+html.light .bg-black\/90,
+html.light .bg-black\/80,
+html.light .bg-black\/70,
+html.light .bg-black\/60 {
+  background-color: rgba(248, 250, 252, 0.92) !important;
+}
+
+html.light .hover\:bg-zinc-900:hover {
+  background-color: #e2e8f0 !important;
+}
+
+html.light .hover\:bg-zinc-800:hover {
+  background-color: #cbd5e1 !important;
+}
+
+/* Typography */
+html.light .text-white {
+  color: #0f172a !important;
+}
+
+html.light .text-zinc-100,
+html.light .text-zinc-200 {
+  color: #1e293b !important;
+}
+
+html.light .text-zinc-300 {
+  color: #334155 !important;
+}
+
+html.light .text-zinc-400 {
+  color: #64748b !important;
+}
+
+html.light .text-zinc-500 {
+  color: #94a3b8 !important;
+}
+
+/* Yellow brand accents in Light mode - Rich amber with high WCAG contrast */
+html.light .text-yellow-400 {
+  color: #b45309 !important;
+}
+
+html.light .bg-yellow-400 {
+  background-color: #f59e0b !important;
+  color: #000000 !important;
+}
+
+html.light .hover\:bg-yellow-300:hover {
+  background-color: #d97706 !important;
+  color: #ffffff !important;
+}
+
+html.light .bg-yellow-400\/10 {
+  background-color: rgba(245, 158, 11, 0.12) !important;
+}
+
+html.light .border-yellow-400,
+html.light .border-yellow-400\/80 {
+  border-color: #f59e0b !important;
+}
+
+html.light .border-yellow-400\/30,
+html.light .border-yellow-400\/20 {
+  border-color: rgba(245, 158, 11, 0.35) !important;
+}
+
+/* Borders */
+html.light .border-zinc-800,
+html.light .border-zinc-800\/80,
+html.light .border-zinc-800\/50,
+html.light .border-zinc-700,
+html.light .border-zinc-900,
+html.light .border-zinc-900\/60 {
+  border-color: #e2e8f0 !important;
+}
+
+/* Glass and Cards */
+html.light .glass {
+  background: rgba(255, 255, 255, 0.88) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(226, 232, 240, 0.9) !important;
+}
+
+html.light .glass-card {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
+}
+
+html.light .glass-card:hover {
+  border-color: #f59e0b !important;
+}
+
+/* Inputs, Textareas, Selects */
+html.light input,
+html.light textarea,
+html.light select {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+
+html.light input:focus,
+html.light textarea:focus,
+html.light select:focus {
+  border-color: #f59e0b !important;
+  outline: none !important;
+}
+
+html.light input::placeholder,
+html.light textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+html.light nav {
+  background-color: rgba(255, 255, 255, 0.92) !important;
+  border-bottom-color: #e2e8f0 !important;
+}
+
+html.light footer {
+  background-color: #f8fafc !important;
+  border-top-color: #e2e8f0 !important;
+}
+
 

@@ -127,7 +127,7 @@ export default function AdminCMSPage() {
       <section className="flex flex-col gap-6">
         <div className="flex items-center gap-2">
           <Layers className="w-5 h-5 text-yellow-400" />
-          <h2 className="text-xl font-bold text-white">Services & Pricing Architecture ({services.length})</h2>
+          <h2 className="text-xl font-bold text-white">Services & Offerings ({services.length})</h2>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -155,9 +155,10 @@ export default function AdminCMSPage() {
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="text-[10px] font-mono uppercase text-zinc-500">Price Guide</label>
+                <label className="text-[10px] font-mono uppercase text-zinc-500">Estimate / Pricing (Rupees)</label>
                 <input
                   type="text"
+                  placeholder="e.g. From ₹25,000"
                   value={srv.priceRange || ""}
                   onChange={(e) => handleServiceChange(sIdx, "priceRange", e.target.value)}
                   className="bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-yellow-400"

@@ -129,8 +129,8 @@ export default function AdminProjectsPage() {
             {
               description: `${project.name} — Full-Stack Deliverable Milestone`,
               quantity: 1,
-              unitPrice: parseInt((project.budget || `$${project.amount || 7500}`).replace(/[^0-9]/g, '')) || 7500,
-              amount: parseInt((project.budget || `$${project.amount || 7500}`).replace(/[^0-9]/g, '')) || 7500,
+              unitPrice: parseInt((project.budget || `₹${project.amount || 75000}`).replace(/[^0-9]/g, '')) || 75000,
+              amount: parseInt((project.budget || `₹${project.amount || 75000}`).replace(/[^0-9]/g, '')) || 75000,
             }
           ],
           dueDate: new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0],
@@ -231,7 +231,7 @@ export default function AdminProjectsPage() {
                       Client: <strong className="text-zinc-200">{proj.clientCompany || proj.clientName}</strong> ({proj.clientEmail})
                     </span>
                     <span className="text-[11px] font-mono text-zinc-500">
-                      Service: {proj.serviceName} | Budget: {proj.budget || `$${proj.amount || 0}`} | Due: {proj.expectedDelivery}
+                      Service: {proj.serviceName} | Budget: {proj.budget || `₹${(proj.amount || 0).toLocaleString('en-IN')}`} | Due: {proj.expectedDelivery}
                     </span>
                   </div>
                 </div>
@@ -390,7 +390,7 @@ export default function AdminProjectsPage() {
                   <label className="text-[11px] font-mono text-zinc-400 uppercase">Budget Allocation</label>
                   <input
                     type="text"
-                    placeholder="$10,000"
+                    placeholder="₹75,000"
                     value={newProject.budget}
                     onChange={(e) => setNewProject({ ...newProject, budget: e.target.value })}
                     className="bg-zinc-900 border border-zinc-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-yellow-400"
