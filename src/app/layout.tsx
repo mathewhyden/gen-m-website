@@ -25,7 +25,7 @@ const plusJakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Gen-M — Digital Product Studio & Creative Agency",
+  title: "Gen-M Tech — Digital Products & AI Solutions",
   description: "We design modern websites, brand identities, graphic designs, and AI solutions to help businesses grow.",
   icons: {
     icon: [
@@ -36,22 +36,22 @@ export const metadata: Metadata = {
     apple: "/apple-touch-icon.png",
   },
   openGraph: {
-    title: "Gen-M — Digital Product Studio & Creative Agency",
+    title: "Gen-M Tech — Digital Products & AI Solutions",
     description: "We design modern websites, brand identities, graphic designs, and AI solutions to help businesses grow.",
     url: "https://gen-m-website.ai.studio",
-    siteName: "Gen-M",
+    siteName: "Gen-M Tech",
     images: [
       {
         url: "/og-square.png",
         width: 600,
         height: 600,
-        alt: "Gen-M Studio",
+        alt: "Gen-M Tech",
       },
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Gen-M Digital Product Studio & Creative Agency",
+        alt: "Gen-M Tech Digital Products & AI Solutions",
       },
     ],
     locale: "en_US",
@@ -59,7 +59,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Gen-M — Digital Product Studio & Creative Agency",
+    title: "Gen-M Tech — Digital Products & AI Solutions",
     description: "We design modern websites, brand identities, graphic designs, and AI solutions to help businesses grow.",
     images: ["/og-image.png"],
   },

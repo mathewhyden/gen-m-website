@@ -132,7 +132,7 @@ export default function Footer() {
             <ul className="flex flex-col gap-3 text-sm text-zinc-300">
               <li>
                 <a
-                  href="https://mail.google.com/mail/?view=cm&fs=1&to=admin.genm@gmail.com&su=Project%20Inquiry%20%7C%20Gen-M%20Studio"
+                  href="https://mail.google.com/mail/?view=cm&fs=1&to=admin.genm@gmail.com&su=Project%20Inquiry%20%7C%20Gen-M%20Tech"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 hover:text-yellow-400 transition-colors group"

@@ -40,7 +40,7 @@ export default function OurWorkPage() {
           </div>
           <h1 className="text-4xl sm:text-6xl font-black tracking-tight uppercase leading-[1.08] mb-4 text-white">
             <MaskWipeText text="Our " delay={0.15} />
-            <TextShimmer text="Work" />
+            <TextShimmer text="Works" />
           </h1>
           <p className="text-base sm:text-lg text-zinc-300 leading-relaxed font-normal">
             <WordBlurIn

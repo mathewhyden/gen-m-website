@@ -34,7 +34,7 @@ export default function WorkSection() {
               </span>
               <h2 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight uppercase leading-[1.08] text-white">
                 <MaskWipeText text="Our " delay={0.1} />
-                <TextShimmer text="Work" />
+                <TextShimmer text="Works" />
               </h2>
             </div>
             <p className="text-base text-zinc-300 max-w-md font-normal leading-relaxed">

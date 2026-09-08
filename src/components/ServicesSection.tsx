@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Sparkles } from "lucide-react";
 import { ServiceItem } from "@/lib/types";
 import MarvelServiceShowcase from "./MarvelServiceShowcase";
 import { ScrollReveal } from "./ScrollReveal";
@@ -9,10 +8,24 @@ import { MaskWipeText, LetterSpacingExpand, TextShimmer } from "./TextAnimations
 
 const defaultServices: ServiceItem[] = [
   {
-    id: "branding",
-    title: "Brand Identity",
+    id: "web-development",
+    title: "Web Development",
     description:
-      "Distinct visual identity systems, typography pairings, color palettes, and comprehensive brand guidelines that make your business stand out.",
+      "Modern, responsive and high-performance websites built for real businesses and brands.",
+    iconName: "Monitor",
+    features: [
+      "Custom Modern Web Design",
+      "Fast Loading & Mobile-Ready",
+      "Search Engine Friendly",
+      "Easy Content Management",
+    ],
+    badge: "Flagship",
+  },
+  {
+    id: "branding",
+    title: "Branding",
+    description:
+      "Strategic visual identities that make brands recognizable, memorable and consistent.",
     iconName: "Palette",
     features: [
       "Brand Guidelines & Systems",
@@ -26,7 +39,7 @@ const defaultServices: ServiceItem[] = [
     id: "graphic-design",
     title: "Graphic Design",
     description:
-      "Eye-catching visual designs, pitch decks, social media creatives, banners, and marketing assets tailored to your brand.",
+      "Creative visual communication, marketing materials, social media designs and digital artwork.",
     iconName: "Sparkles",
     features: [
       "Social Media & Ad Creatives",
@@ -40,7 +53,7 @@ const defaultServices: ServiceItem[] = [
     id: "digital-marketing",
     title: "Digital Marketing",
     description:
-      "Targeted digital marketing campaigns, search engine optimization (SEO), and conversion strategies to grow your online presence.",
+      "Creative digital strategies that help brands reach the right audience and grow online.",
     iconName: "TrendingUp",
     features: [
       "Search Engine Optimization (SEO)",
@@ -52,9 +65,9 @@ const defaultServices: ServiceItem[] = [
   },
   {
     id: "ai-agents",
-    title: "AI Agents & Automation",
+    title: "AI Agents",
     description:
-      "Smart AI tools, chatbots, and workflow automation to save you time, assist your customers, and streamline daily tasks.",
+      "Intelligent AI-powered agents designed to automate tasks, improve workflows and create smarter digital experiences.",
     iconName: "Brain",
     features: [
       "Custom AI Chatbots",
@@ -63,34 +76,6 @@ const defaultServices: ServiceItem[] = [
       "AI-Powered Business Tools",
     ],
     badge: "Next-Gen",
-  },
-  {
-    id: "web-development",
-    title: "Web Development",
-    description:
-      "Fast, modern, and mobile-friendly websites and web applications built with clean code and high performance.",
-    iconName: "Monitor",
-    features: [
-      "Custom Modern Web Design",
-      "Fast Loading & Mobile-Ready",
-      "Search Engine Friendly",
-      "Easy Content Management",
-    ],
-    badge: "Flagship",
-  },
-  {
-    id: "app-development",
-    title: "App Development",
-    description:
-      "Clean, responsive mobile applications for iOS and Android built for seamless usability and reliable performance.",
-    iconName: "Smartphone",
-    features: [
-      "iOS & Android Mobile Apps",
-      "User-Friendly Interface",
-      "Fast & Secure Performance",
-      "Ongoing Maintenance & Updates",
-    ],
-    badge: "Mobile",
   },
 ];
 
@@ -108,11 +93,18 @@ export default function ServicesSection({
       .then((res) => res.json())
       .then((data) => {
         if (data.services && data.services.length > 0) {
-          const normalized = data.services.map((s: ServiceItem) => ({
-            ...s,
-            title: s.title.replace(/ & CRM/gi, ""),
-          }));
-          setServices(normalized);
+          const normalized = data.services
+            .filter((s: ServiceItem) => {
+              const lower = s.id.toLowerCase() + " " + s.title.toLowerCase();
+              return !lower.includes("app-dev") && !lower.includes("app dev") && !lower.includes("crm");
+            })
+            .map((s: ServiceItem) => ({
+              ...s,
+              title: s.title.replace(/ & CRM/gi, ""),
+            }));
+          if (normalized.length > 0) {
+            setServices(normalized);
+          }
         }
       })
       .catch(() => {});
@@ -125,8 +117,8 @@ export default function ServicesSection({
         <ScrollReveal delay={0.05} yOffset={20}>
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
             <div className="max-w-xl">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-900 border border-zinc-800 text-xs font-semibold uppercase tracking-wider text-yellow-400 mb-4">
-                <Sparkles className="w-3.5 h-3.5 text-yellow-400" />
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-900 border border-zinc-800/80 text-xs font-semibold uppercase tracking-wider text-yellow-400 mb-4">
+                <span className="w-1.5 h-1.5 rounded-full bg-yellow-400" />
                 <LetterSpacingExpand text="Our Core Services" delay={0.1} />
               </div>
               <h2 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-white uppercase leading-[1.08]">

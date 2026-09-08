@@ -7,8 +7,9 @@ import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import WhatWeDoMarquee from "@/components/WhatWeDoMarquee";
-import InteractiveWhoWeAreCards from "@/components/InteractiveWhoWeAreCards";
-import { ScrollReveal, ScrollStagger, ScrollStaggerItem } from "@/components/ScrollReveal";
+import WhoWeAreTimeline from "@/components/WhoWeAreTimeline";
+import TeamGenM from "@/components/TeamGenM";
+import { ScrollReveal } from "@/components/ScrollReveal";
 import {
   MaskWipeText,
   TextShimmer,
@@ -18,20 +19,10 @@ import {
 import { 
   ArrowRight,
   ArrowUpRight,
-  Sparkles,
 } from "lucide-react";
 
 export default function AboutPage() {
   const router = useRouter();
-
-  const workflowSteps = [
-    "Discover",
-    "Plan",
-    "Design",
-    "Build",
-    "Launch",
-    "Grow"
-  ];
 
   return (
     <div className="bg-black min-h-screen text-white font-sans relative flex flex-col w-full overflow-x-hidden">
@@ -44,7 +35,7 @@ export default function AboutPage() {
             <ScrollReveal delay={0.05} yOffset={20}>
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-yellow-400/30 bg-yellow-400/10 text-yellow-400 text-xs font-semibold uppercase tracking-wider mb-5">
                 <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse" />
-                <LetterSpacingExpand text="About Gen-M Studio" delay={0.1} />
+                <LetterSpacingExpand text="About Gen-M Tech" delay={0.1} />
               </div>
             </ScrollReveal>
 
@@ -58,7 +49,7 @@ export default function AboutPage() {
             <ScrollReveal delay={0.25} yOffset={25}>
               <p className="text-base sm:text-lg text-zinc-300 font-normal leading-relaxed mt-5 max-w-xl">
                 <WordBlurIn
-                  text="Gen-M is an independent creative and technology studio. We partner with founders, businesses, and forward-thinking teams to engineer distinctive brand identities, lightning-fast web applications, and autonomous digital systems."
+                  text="Gen-M Tech is an independent creative and technology agency. We partner with founders, businesses, and forward-thinking teams to engineer distinctive brand identities, lightning-fast web applications, and autonomous digital systems."
                   delay={0.25}
                 />
               </p>
@@ -77,7 +68,7 @@ export default function AboutPage() {
                   href="/work"
                   className="px-8 py-3.5 rounded-full bg-zinc-900 border border-zinc-700 text-zinc-200 font-semibold text-xs uppercase tracking-wider hover:border-yellow-400 hover:text-white transition-all duration-200 cursor-pointer"
                 >
-                  View Our Work
+                  View Our Works
                 </Link>
               </div>
             </ScrollReveal>
@@ -86,7 +77,7 @@ export default function AboutPage() {
           <ScrollReveal delay={0.2} yOffset={30} className="lg:col-span-6 relative aspect-square sm:aspect-[4/3] lg:aspect-[5/4] rounded-3xl overflow-hidden border border-zinc-800 bg-zinc-900 shadow-2xl">
             <Image
               src="/services/web-development.jpg"
-              alt="Gen-M Studio Craft"
+              alt="Gen-M Tech Craft"
               fill
               priority
               className="object-cover"
@@ -95,7 +86,7 @@ export default function AboutPage() {
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
             <div className="absolute bottom-6 left-6 right-6 p-4 rounded-2xl bg-black/70 backdrop-blur-md border border-white/10 flex items-center justify-between">
               <div>
-                <span className="text-[10px] font-mono uppercase tracking-widest text-yellow-400 block font-bold">Studio Standard</span>
+                <span className="text-[10px] font-mono uppercase tracking-widest text-yellow-400 block font-bold">Gen-M Tech Standard</span>
                 <span className="text-sm font-bold text-white">Pixel-level rigor &amp; pure performance</span>
               </div>
               <span className="text-xs font-mono text-zinc-400">Est. 2024</span>
@@ -103,25 +94,25 @@ export default function AboutPage() {
           </ScrollReveal>
         </section>
 
-        {/* 2. Who We Are - 3-Card Grid with Scroll Reveal */}
+        {/* 2. Who We Are - Animated Timeline with Scroll Reveal */}
         <section className="flex flex-col gap-8 pt-6">
           <ScrollReveal delay={0.1} yOffset={20}>
             <div className="flex flex-col items-start gap-2">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-xs font-semibold uppercase tracking-wider text-yellow-400">
-                <Sparkles className="w-3.5 h-3.5 text-yellow-400" />
-                <LetterSpacingExpand text="Who We Are" delay={0.1} />
+                <span className="w-1.5 h-1.5 rounded-full bg-yellow-400" />
+                <LetterSpacingExpand text="Gen-M Tech Values" delay={0.1} />
               </div>
               <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
                 <MaskWipeText text="Who We Are" delay={0.15} />
               </h2>
               <p className="text-base text-zinc-400 max-w-xl font-normal leading-relaxed">
-                An independent studio dedicated to clean design, fast engineering, and dependable long-term collaboration.
+                Gen-M Tech is dedicated to clean design, fast engineering, and dependable long-term collaboration.
               </p>
             </div>
           </ScrollReveal>
 
           <ScrollReveal delay={0.2} yOffset={25}>
-            <InteractiveWhoWeAreCards />
+            <WhoWeAreTimeline />
           </ScrollReveal>
         </section>
 
@@ -132,33 +123,25 @@ export default function AboutPage() {
           </ScrollReveal>
         </section>
 
-        {/* 4. How We Work - Scroll Reveal */}
-        <section className="flex flex-col gap-8 pt-6">
+        {/* 4. Team Gen-M */}
+        <section id="team" className="flex flex-col gap-8 pt-6">
           <ScrollReveal delay={0.1} yOffset={20}>
             <div>
-              <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-2">
-                How We Work
+              <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-2 inline-flex items-baseline gap-2">
+                <span>Team</span>
+                <span className="tracking-tight uppercase">
+                  GEN-<span className="text-yellow-400 italic">M</span>
+                </span>
               </h2>
               <p className="text-base text-zinc-400 max-w-xl font-normal leading-relaxed">
-                A structured 6-step cycle built to eliminate guesswork and deliver on schedule.
+                The core developers and engineers behind Gen-M Tech building scalable web architectures and intelligent automation.
               </p>
             </div>
           </ScrollReveal>
 
-          <ScrollStagger staggerDelay={0.08} className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-            {workflowSteps.map((step, idx) => (
-              <ScrollStaggerItem key={idx} yOffset={20}>
-                <div className="p-4 sm:p-5 rounded-xl bg-zinc-950 border border-zinc-800 flex flex-col justify-between gap-3 text-center items-center hover:border-yellow-400/60 transition-colors h-full">
-                  <span className="text-xs font-mono text-yellow-400 font-bold">
-                    0{idx + 1}
-                  </span>
-                  <span className="text-sm sm:text-base font-bold text-white tracking-tight">
-                    {step}
-                  </span>
-                </div>
-              </ScrollStaggerItem>
-            ))}
-          </ScrollStagger>
+          <ScrollReveal delay={0.2} yOffset={25}>
+            <TeamGenM />
+          </ScrollReveal>
         </section>
 
         {/* 5. CTA Footer Block */}

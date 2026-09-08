@@ -8,11 +8,10 @@ import {
   Phone, 
   MapPin, 
   ExternalLink, 
-  Calendar, 
   MessageCircle, 
   Copy, 
   Check, 
-  ArrowUpRight
+  ArrowRight
 } from "lucide-react";
 import Link from "next/link";
 
@@ -50,144 +49,120 @@ export default function ContactPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Company Details & Quick Actions */}
           <div className="lg:col-span-5 flex flex-col gap-6">
-            <div className="p-8 rounded-2xl bg-zinc-950 border border-zinc-800 flex flex-col gap-7">
+            <div className="p-8 rounded-2xl bg-zinc-950 border border-zinc-800 flex flex-col gap-6">
               <h2 className="text-2xl font-bold text-white">Company Contacts</h2>
 
-              {/* Email Item */}
-              <div className="flex flex-col gap-3 pb-6 border-b border-zinc-900">
-                <div className="flex items-start gap-3">
+              {/* Row 1: Email */}
+              <div className="flex items-center justify-between gap-3 pb-5 border-b border-zinc-900">
+                <div className="flex items-center gap-3 min-w-0">
                   <div className="w-10 h-10 rounded-xl bg-yellow-400/10 border border-yellow-400/20 flex items-center justify-center text-yellow-400 shrink-0">
                     <Mail className="w-5 h-5" />
                   </div>
-                  <div className="flex-grow min-w-0">
-                    <span className="text-xs font-mono uppercase tracking-wider text-zinc-500 block">
-                      Email Address
-                    </span>
-                    <div className="flex items-center gap-2 flex-wrap mt-0.5">
-                      <a 
-                        href="mailto:admin.genm@gmail.com"
-                        className="text-base font-semibold text-white hover:text-yellow-400 transition-colors break-all"
-                        title="Send email to Gen-M"
-                      >
-                        admin.genm@gmail.com
-                      </a>
-                      <button
-                        type="button"
-                        onClick={handleCopyEmail}
-                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-[11px] font-mono text-zinc-400 hover:text-yellow-400 hover:border-yellow-400 transition-colors cursor-pointer"
-                        title="Copy email address"
-                      >
-                        {copied ? (
-                          <>
-                            <Check className="w-3 h-3 text-emerald-400" />
-                            <span className="text-emerald-400">Copied</span>
-                          </>
-                        ) : (
-                          <>
-                            <Copy className="w-3 h-3" />
-                            <span>Copy</span>
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  </div>
+                  <a 
+                    href="mailto:admin.genm@gmail.com"
+                    className="text-sm sm:text-base font-semibold text-white hover:text-yellow-400 transition-colors truncate"
+                    title="Send email to Gen-M Tech"
+                  >
+                    admin.genm@gmail.com
+                  </a>
                 </div>
+                <button
+                  type="button"
+                  onClick={handleCopyEmail}
+                  className="w-9 h-9 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-400 hover:text-yellow-400 hover:border-yellow-400 transition-colors shrink-0 cursor-pointer"
+                  title="Copy email address"
+                  aria-label="Copy email address"
+                >
+                  {copied ? (
+                    <Check className="w-4 h-4 text-emerald-400" />
+                  ) : (
+                    <Copy className="w-4 h-4" />
+                  )}
+                </button>
               </div>
 
-              {/* Phone 1: +91 87542 54943 with Call & WhatsApp Buttons */}
-              <div className="flex flex-col gap-3 pb-6 border-b border-zinc-900">
-                <div className="flex items-start gap-3">
+              {/* Row 2: Phone 1 + WhatsApp & Call Buttons (Icons Only) */}
+              <div className="flex items-center justify-between gap-3 pb-5 border-b border-zinc-900">
+                <div className="flex items-center gap-3 min-w-0">
                   <div className="w-10 h-10 rounded-xl bg-yellow-400/10 border border-yellow-400/20 flex items-center justify-center text-yellow-400 shrink-0">
                     <Phone className="w-5 h-5" />
                   </div>
-                  <div>
-                    <span className="text-xs font-mono uppercase tracking-wider text-zinc-500 block">
-                      Phone & WhatsApp (Primary)
-                    </span>
-                    <span className="text-base font-semibold text-white font-mono">
-                      +91 87542 54943
-                    </span>
-                  </div>
+                  <span className="text-sm sm:text-base font-semibold text-white font-mono truncate">
+                    +91 87542 54943
+                  </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 mt-1">
+                <div className="flex items-center gap-2 shrink-0">
                   <a
-                    href="https://wa.me/918754254943?text=Hi%20Gen-M%20team,%20I'd%20like%20to%20discuss%20a%20project."
+                    href="https://wa.me/918754254943?text=Hi%20Gen-M%20Tech%20team,%20I'd%20like%20to%20discuss%20a%20project."
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="py-2.5 px-3 rounded-xl bg-emerald-950/40 hover:bg-emerald-500 hover:text-black border border-emerald-800/60 text-xs font-bold text-emerald-400 flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                    className="w-9 h-9 rounded-lg bg-emerald-950/40 hover:bg-emerald-500 hover:text-black border border-emerald-800/60 text-emerald-400 flex items-center justify-center transition-all cursor-pointer shadow-sm"
+                    title="WhatsApp"
+                    aria-label="WhatsApp"
                   >
                     <MessageCircle className="w-4 h-4" />
-                    WhatsApp
                   </a>
                   <a
                     href="tel:8754254943"
-                    className="py-2.5 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-200 border border-zinc-800 text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                    className="w-9 h-9 rounded-lg bg-zinc-900 hover:bg-yellow-400 hover:text-black text-yellow-400 border border-zinc-800 flex items-center justify-center transition-all cursor-pointer shadow-sm"
+                    title="Call Now"
+                    aria-label="Call Now"
                   >
-                    <Phone className="w-3.5 h-3.5 text-yellow-400" />
-                    Call Now
+                    <Phone className="w-4 h-4" />
                   </a>
                 </div>
               </div>
 
-              {/* Phone 2: +91 97868 53498 with Call & WhatsApp Buttons */}
-              <div className="flex flex-col gap-3 pb-2">
-                <div className="flex items-start gap-3">
+              {/* Row 3: Phone 2 + WhatsApp & Call Buttons (Icons Only) */}
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-3 min-w-0">
                   <div className="w-10 h-10 rounded-xl bg-yellow-400/10 border border-yellow-400/20 flex items-center justify-center text-yellow-400 shrink-0">
                     <Phone className="w-5 h-5" />
                   </div>
-                  <div>
-                    <span className="text-xs font-mono uppercase tracking-wider text-zinc-500 block">
-                      Phone & WhatsApp (Secondary)
-                    </span>
-                    <span className="text-base font-semibold text-white font-mono">
-                      +91 97868 53498
-                    </span>
-                  </div>
+                  <span className="text-sm sm:text-base font-semibold text-white font-mono truncate">
+                    +91 97868 53498
+                  </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 mt-1">
+                <div className="flex items-center gap-2 shrink-0">
                   <a
-                    href="https://wa.me/919786853498?text=Hi%20Gen-M%20team,%20I'd%20like%20to%20discuss%20a%20project."
+                    href="https://wa.me/919786853498?text=Hi%20Gen-M%20Tech%20team,%20I'd%20like%20to%20discuss%20a%20project."
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="py-2.5 px-3 rounded-xl bg-emerald-950/40 hover:bg-emerald-500 hover:text-black border border-emerald-800/60 text-xs font-bold text-emerald-400 flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                    className="w-9 h-9 rounded-lg bg-emerald-950/40 hover:bg-emerald-500 hover:text-black border border-emerald-800/60 text-emerald-400 flex items-center justify-center transition-all cursor-pointer shadow-sm"
+                    title="WhatsApp"
+                    aria-label="WhatsApp"
                   >
                     <MessageCircle className="w-4 h-4" />
-                    WhatsApp
                   </a>
                   <a
                     href="tel:9786853498"
-                    className="py-2.5 px-3 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-200 border border-zinc-800 text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+                    className="w-9 h-9 rounded-lg bg-zinc-900 hover:bg-yellow-400 hover:text-black text-yellow-400 border border-zinc-800 flex items-center justify-center transition-all cursor-pointer shadow-sm"
+                    title="Call Now"
+                    aria-label="Call Now"
                   >
-                    <Phone className="w-3.5 h-3.5 text-yellow-400" />
-                    Call Now
+                    <Phone className="w-4 h-4" />
                   </a>
                 </div>
               </div>
             </div>
 
-            {/* Quick Action: Start Project or Book Call */}
+            {/* Quick Action: Scheduled Consultation -> Start Project only */}
             <div className="p-6 rounded-2xl bg-zinc-950 border border-zinc-800 flex flex-col gap-3">
               <span className="text-xs font-bold uppercase tracking-wider text-yellow-400">
-                Prefer a Scheduled Meeting?
+                Prefer a Scheduled Consultation?
               </span>
               <p className="text-xs text-zinc-400 leading-relaxed">
-                Pick a convenient time for a 1-on-1 consultation to discuss your vision and roadmap.
+                Pick a convenient time for a 1-on-1 discovery meeting with our technical team.
               </p>
-              <div className="flex gap-3 pt-2">
+              <div className="pt-2">
                 <Link
-                  href="/book-consultation"
-                  className="w-full py-2.5 px-4 rounded-xl bg-yellow-400 text-black font-bold text-xs uppercase tracking-wider hover:bg-yellow-300 transition-colors flex items-center justify-center gap-1.5"
-                >
-                  <Calendar className="w-3.5 h-3.5" />
-                  Book Call
-                </Link>
-                <Link
-                  href="/book-consultation"
-                  className="w-full py-2.5 px-4 rounded-xl bg-zinc-900 border border-zinc-700 text-white font-semibold text-xs uppercase tracking-wider hover:border-yellow-400 transition-colors flex items-center justify-center"
+                  href="/start-project"
+                  className="w-full py-3 px-4 rounded-xl bg-yellow-400 text-black font-bold text-xs uppercase tracking-wider hover:bg-yellow-300 transition-colors flex items-center justify-center gap-2 shadow-md shadow-yellow-400/10 cursor-pointer"
                 >
                   Start Project
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
             </div>
@@ -202,7 +177,7 @@ export default function ContactPage() {
                     <MapPin className="w-4 h-4 text-yellow-400" />
                     Our Office Location
                   </div>
-                  <h2 className="text-2xl font-bold text-white">Visit Our Company</h2>
+                  <h2 className="text-2xl font-bold text-white">Visit Gen-M Tech</h2>
                   <p className="text-xs text-zinc-400 mt-1">
                     Find our office easily or navigate directly using Google Maps.
                   </p>
@@ -234,7 +209,7 @@ export default function ContactPage() {
                 <div className="bg-zinc-900/95 border-t border-zinc-800 p-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
                   <div className="flex items-center gap-2 text-zinc-300">
                     <MapPin className="w-4 h-4 text-yellow-400 shrink-0" />
-                    <span>Gen-M Company Headquarters</span>
+                    <span>Gen-M Tech Headquarters</span>
                   </div>
                   <a
                     href={mapLink}

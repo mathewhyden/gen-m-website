@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { Sparkles } from "lucide-react";
 import { ServiceItem } from "@/lib/types";
 import MarvelServiceShowcase from "@/components/MarvelServiceShowcase";
 import WhatWeDoMarquee from "@/components/WhatWeDoMarquee";
@@ -11,9 +10,17 @@ import { ScrollReveal } from "@/components/ScrollReveal";
 
 const defaultServices: ServiceItem[] = [
   {
+    id: "web-development",
+    title: "Web Development",
+    description: "Modern, responsive and high-performance websites built for real businesses and brands.",
+    iconName: "Monitor",
+    features: ["Custom Modern Web Design", "Fast Loading & Mobile-Ready", "Search Engine Friendly", "Easy Content Management"],
+    badge: "Web Applications",
+  },
+  {
     id: "branding",
-    title: "Brand Identity",
-    description: "Distinct visual identity systems, typography pairings, color palettes, and comprehensive brand guidelines that make your business stand out.",
+    title: "Branding",
+    description: "Strategic visual identities that make brands recognizable, memorable and consistent.",
     iconName: "Palette",
     features: ["Brand Guidelines & Systems", "Typography & Color Palette", "Custom Logos & Marks", "Digital & Print Assets"],
     badge: "Brand Systems",
@@ -21,7 +28,7 @@ const defaultServices: ServiceItem[] = [
   {
     id: "graphic-design",
     title: "Graphic Design",
-    description: "Eye-catching visual designs, pitch decks, social media creatives, banners, and marketing assets tailored to your brand.",
+    description: "Creative visual communication, marketing materials, social media designs and digital artwork.",
     iconName: "Sparkles",
     features: ["Social Media & Ad Creatives", "Pitch Decks & Presentations", "Packaging & Print Design", "Custom Vector Illustrations"],
     badge: "Visual Design",
@@ -29,34 +36,18 @@ const defaultServices: ServiceItem[] = [
   {
     id: "digital-marketing",
     title: "Digital Marketing",
-    description: "Targeted digital marketing campaigns, search engine optimization (SEO), and conversion strategies to grow your online presence.",
+    description: "Creative digital strategies that help brands reach the right audience and grow online.",
     iconName: "TrendingUp",
     features: ["Search Engine Optimization (SEO)", "Social Media Marketing", "Performance Ad Campaigns", "Email Marketing Setup"],
     badge: "Marketing & Growth",
   },
   {
     id: "ai-agents",
-    title: "AI Agents & Automation",
-    description: "Smart AI tools, chatbots, and workflow automation to save you time, assist your customers, and streamline daily tasks.",
+    title: "AI Agents",
+    description: "Intelligent AI-powered agents designed to automate tasks, improve workflows and create smarter digital experiences.",
     iconName: "Brain",
     features: ["Custom AI Chatbots", "Workflow Automation", "Smart Customer Support", "AI-Powered Business Tools"],
     badge: "Smart Automation",
-  },
-  {
-    id: "web-development",
-    title: "Web Development",
-    description: "Fast, modern, and mobile-friendly websites and web applications built with clean code and high performance.",
-    iconName: "Monitor",
-    features: ["Custom Modern Web Design", "Fast Loading & Mobile-Ready", "Search Engine Friendly", "Easy Content Management"],
-    badge: "Web Applications",
-  },
-  {
-    id: "app-development",
-    title: "App Development",
-    description: "Clean, responsive mobile applications for iOS and Android built for seamless usability and reliable performance.",
-    iconName: "Smartphone",
-    features: ["iOS & Android Mobile Apps", "User-Friendly Interface", "Fast & Secure Performance", "Ongoing Maintenance & Updates"],
-    badge: "Mobile Apps",
   },
 ];
 
@@ -70,22 +61,29 @@ export default function ServicesPage() {
       .then((data) => {
         if (data.services && data.services.length > 0) {
           // Normalize titles and remove buzzwords (craft, high roi)
-          const normalized = data.services.map((s: ServiceItem) => {
-            let badge = (s.badge || "").trim();
-            badge = badge
-              .replace(/creative craft/gi, "Visual Design")
-              .replace(/craft/gi, "Design")
-              .replace(/high roi/gi, "Marketing & Growth")
-              .replace(/core foundation/gi, "Brand Systems")
-              .trim();
+          const normalized = data.services
+            .filter((s: ServiceItem) => {
+              const lower = s.id.toLowerCase() + " " + s.title.toLowerCase();
+              return !lower.includes("app-dev") && !lower.includes("app dev") && !lower.includes("crm");
+            })
+            .map((s: ServiceItem) => {
+              let badge = (s.badge || "").trim();
+              badge = badge
+                .replace(/creative craft/gi, "Visual Design")
+                .replace(/craft/gi, "Design")
+                .replace(/high roi/gi, "Marketing & Growth")
+                .replace(/core foundation/gi, "Brand Systems")
+                .trim();
 
-            return {
-              ...s,
-              title: s.title.replace(/ & CRM/gi, ""),
-              badge,
-            };
-          });
-          setServices(normalized);
+              return {
+                ...s,
+                title: s.title.replace(/ & CRM/gi, ""),
+                badge,
+              };
+            });
+          if (normalized.length > 0) {
+            setServices(normalized);
+          }
         }
       })
       .catch(() => {});
@@ -119,8 +117,8 @@ export default function ServicesPage() {
         {/* Header with Smooth Scroll Reveal */}
         <section className="flex flex-col items-start max-w-3xl pt-8">
           <ScrollReveal delay={0.05} yOffset={20}>
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-900 border border-zinc-800 text-xs font-semibold uppercase tracking-wider text-yellow-400 mb-6">
-              <Sparkles className="w-3.5 h-3.5 text-yellow-400" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-900 border border-zinc-800/80 text-xs font-semibold uppercase tracking-wider text-yellow-400 mb-6">
+              <span className="w-1.5 h-1.5 rounded-full bg-yellow-400" />
               Our Services
             </div>
           </ScrollReveal>

@@ -1,11 +1,12 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
+import { Camera } from "lucide-react";
 import WhatWeDoMarquee from "./WhatWeDoMarquee";
-import InteractiveWhoWeAreCards from "./InteractiveWhoWeAreCards";
-import InteractiveHowWeWork from "./InteractiveHowWeWork";
+import WhoWeAreTimeline from "./WhoWeAreTimeline";
+import TeamGenM from "./TeamGenM";
 import { ScrollReveal } from "./ScrollReveal";
-import { Sparkles } from "lucide-react";
 import {
   MaskWipeText,
   TextShimmer,
@@ -47,7 +48,7 @@ export default function AboutSection({
             <ScrollReveal delay={0.05} yOffset={20}>
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-yellow-400/30 bg-yellow-400/10 text-yellow-400 text-xs font-semibold uppercase tracking-wider mb-6">
                 <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse" />
-                <LetterSpacingExpand text="About Gen-M Studio" delay={0.1} />
+                <LetterSpacingExpand text="About Gen-M Tech" delay={0.1} />
               </div>
             </ScrollReveal>
 
@@ -64,7 +65,7 @@ export default function AboutSection({
             <ScrollReveal delay={0.25} yOffset={28}>
               <p className="text-lg sm:text-xl text-zinc-300 font-normal leading-relaxed max-w-xl">
                 <WordBlurIn
-                  text="We are Gen-M — we build modern websites, clean brand identities, and smart digital solutions that help your business grow and stand out."
+                  text="We are Gen-M Tech — we build modern websites, clean brand identities, and smart digital solutions that help your business grow and stand out."
                   delay={0.2}
                 />
               </p>
@@ -72,25 +73,25 @@ export default function AboutSection({
           </div>
         </div>
 
-        {/* 2. Who We Are - Restored Left-Aligned Header */}
+        {/* 2. Who We Are */}
         <div className="flex flex-col gap-8 w-full">
           <ScrollReveal delay={0.1} yOffset={20}>
             <div className="flex flex-col items-start gap-2">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-xs font-semibold uppercase tracking-wider text-yellow-400">
-                <Sparkles className="w-3.5 h-3.5 text-yellow-400" />
-                <LetterSpacingExpand text="Who We Are" delay={0.1} />
+                <span className="w-1.5 h-1.5 rounded-full bg-yellow-400" />
+                <LetterSpacingExpand text="Gen-M Tech Values" delay={0.1} />
               </div>
               <h3 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
                 <MaskWipeText text="Who We Are" delay={0.15} />
               </h3>
               <p className="text-sm sm:text-base text-zinc-400 max-w-xl">
-                An independent studio dedicated to clean design, fast engineering, and dependable long-term collaboration.
+                Gen-M Tech is dedicated to clean design, fast engineering, and dependable long-term collaboration.
               </p>
             </div>
           </ScrollReveal>
 
           <ScrollReveal delay={0.15} yOffset={25}>
-            <InteractiveWhoWeAreCards />
+            <WhoWeAreTimeline />
           </ScrollReveal>
         </div>
 
@@ -99,26 +100,38 @@ export default function AboutSection({
           <WhatWeDoMarquee onServiceClick={handleServiceClick} />
         </ScrollReveal>
 
-        {/* 4. How We Work - Restored Left-Aligned Header */}
-        <div className="flex flex-col gap-8 w-full">
+        {/* 4. Team Gen-M */}
+        <div id="team" className="flex flex-col gap-8 w-full scroll-mt-24">
           <ScrollReveal delay={0.1} yOffset={20}>
-            <div className="flex flex-col items-start gap-2">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-xs font-semibold uppercase tracking-wider text-yellow-400">
-                <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse" />
-                Our 6-Step Methodology
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 w-full">
+              <div className="flex flex-col items-start gap-2">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-xs font-semibold uppercase tracking-wider text-yellow-400">
+                  <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse" />
+                  Engineering & Design
+                </div>
+                <h3 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight inline-flex items-baseline gap-2">
+                  <span>Team</span>
+                  <span className="tracking-tight uppercase">
+                    GEN-<span className="text-yellow-400 italic">M</span>
+                  </span>
+                </h3>
+                <p className="text-sm sm:text-base text-zinc-400 max-w-xl">
+                  The developers and engineers building high-performance websites, scalable systems, and intelligent digital experiences.
+                </p>
               </div>
-              <h3 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-                <MaskWipeText text="How We " delay={0.12} />
-                <TextShimmer text="Work" />
-              </h3>
-              <p className="text-sm sm:text-base text-zinc-400 max-w-xl">
-                Our clear process ensures smooth communication, fast delivery, and high quality at every stage.
-              </p>
+
+              <Link
+                href="/team-photos"
+                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 hover:border-yellow-400/50 text-xs font-mono uppercase tracking-wider text-zinc-400 hover:text-yellow-400 transition-all w-fit group"
+              >
+                <Camera className="w-3.5 h-3.5 text-yellow-400 group-hover:scale-110 transition-transform" />
+                <span>Upload Photos</span>
+              </Link>
             </div>
           </ScrollReveal>
 
           <ScrollReveal delay={0.2} yOffset={25}>
-            <InteractiveHowWeWork />
+            <TeamGenM />
           </ScrollReveal>
         </div>
       </div>

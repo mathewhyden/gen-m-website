@@ -456,4 +456,14 @@ html.light footer {
   border-top-color: #e2e8f0 !important;
 }
 
+/* Services Carousel edge fade masks in Light Mode */
+html.light .carousel-edge-gradient-left {
+  background: linear-gradient(to right, #f8fafc 0%, rgba(248, 250, 252, 0.85) 50%, transparent 100%) !important;
+}
+
+html.light .carousel-edge-gradient-right {
+  background: linear-gradient(to left, #f8fafc 0%, rgba(248, 250, 252, 0.85) 50%, transparent 100%) !important;
+}
+
+
 
