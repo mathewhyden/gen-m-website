@@ -8,15 +8,13 @@ import {
   Plus, 
   Trash2, 
   Layers, 
-  Quote, 
   Sparkles,
   X
 } from "lucide-react";
-import { ServiceItem, Testimonial } from "@/lib/types";
+import { ServiceItem } from "@/lib/types";
 
 export default function AdminCMSPage() {
   const [services, setServices] = useState<ServiceItem[]>([]);
-  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [notification, setNotification] = useState("");
@@ -26,7 +24,6 @@ export default function AdminCMSPage() {
       .then(res => res.json())
       .then(data => {
         if (data.services) setServices(data.services);
-        if (data.testimonials) setTestimonials(data.testimonials);
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -38,12 +35,12 @@ export default function AdminCMSPage() {
       const res = await fetch("/api/content", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ services, testimonials }),
+        body: JSON.stringify({ services }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to save CMS content");
 
-      setNotification("CMS content synchronized and updated successfully!");
+      setNotification("CMS services and deliverables synchronized successfully!");
     } catch (err: any) {
       alert(err.message || "Failed to update content");
     } finally {
@@ -69,40 +66,14 @@ export default function AdminCMSPage() {
     setServices(copy);
   };
 
-  const handleTestimonialChange = (index: number, field: keyof Testimonial, value: any) => {
-    const copy = [...testimonials];
-    copy[index] = { ...copy[index], [field]: value };
-    setTestimonials(copy);
-  };
-
-  const handleAddTestimonial = () => {
-    setTestimonials([
-      ...testimonials,
-      {
-        id: `test-${Date.now()}`,
-        name: "New Client",
-        role: "Chief Executive Officer",
-        company: "Brand Co",
-        quote: "Gen-M delivered an extraordinary digital platform that surpassed all benchmarks.",
-        rating: 5,
-      }
-    ]);
-  };
-
-  const handleRemoveTestimonial = (index: number) => {
-    const copy = [...testimonials];
-    copy.splice(index, 1);
-    setTestimonials(copy);
-  };
-
   return (
     <div className="flex flex-col gap-8 pb-12">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="text-xs font-mono font-bold uppercase tracking-wider text-yellow-400 block mb-1">
-            Studio Content Management System
+            Services & Deliverables CMS
           </span>
-          <h1 className="text-3xl font-extrabold text-white tracking-tight">CMS & Copy Editor</h1>
+          <h1 className="text-3xl font-extrabold text-white tracking-tight">Services & Copy Editor</h1>
         </div>
         <button
           onClick={handleSaveCMS}
@@ -209,69 +180,6 @@ export default function AdminCMSPage() {
                   </div>
                 ))}
               </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* Testimonials Editor */}
-      <section className="flex flex-col gap-6 pt-6 border-t border-zinc-900">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Quote className="w-5 h-5 text-yellow-400" />
-            <h2 className="text-xl font-bold text-white">Client Testimonials ({testimonials.length})</h2>
-          </div>
-          <button
-            type="button"
-            onClick={handleAddTestimonial}
-            className="px-4 py-1.5 rounded-full bg-zinc-900 border border-zinc-700 text-xs font-mono text-yellow-400 hover:border-yellow-400 transition-colors"
-          >
-            + Add Testimonial
-          </button>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {testimonials.map((t, tIdx) => (
-            <div key={t.id || tIdx} className="p-6 rounded-2xl bg-zinc-950 border border-zinc-800 flex flex-col gap-4">
-              <div className="flex justify-between items-start">
-                <div className="grid grid-cols-3 gap-2 flex-grow">
-                  <input
-                    type="text"
-                    placeholder="Name"
-                    value={t.name}
-                    onChange={(e) => handleTestimonialChange(tIdx, "name", e.target.value)}
-                    className="bg-zinc-900 border border-zinc-800 rounded-lg px-2.5 py-1.5 text-xs text-white font-bold"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Role"
-                    value={t.role}
-                    onChange={(e) => handleTestimonialChange(tIdx, "role", e.target.value)}
-                    className="bg-zinc-900 border border-zinc-800 rounded-lg px-2.5 py-1.5 text-xs text-zinc-300"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Company"
-                    value={t.company}
-                    onChange={(e) => handleTestimonialChange(tIdx, "company", e.target.value)}
-                    className="bg-zinc-900 border border-zinc-800 rounded-lg px-2.5 py-1.5 text-xs text-zinc-300"
-                  />
-                </div>
-                <button
-                  onClick={() => handleRemoveTestimonial(tIdx)}
-                  className="p-1.5 text-zinc-600 hover:text-red-400 ml-2"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-
-              <textarea
-                rows={3}
-                placeholder="Client quote..."
-                value={t.quote}
-                onChange={(e) => handleTestimonialChange(tIdx, "quote", e.target.value)}
-                className="bg-zinc-900 border border-zinc-800 rounded-lg p-3 text-xs text-zinc-300 focus:outline-none focus:border-yellow-400 resize-none"
-              />
             </div>
           ))}
         </div>

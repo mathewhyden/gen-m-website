@@ -109,7 +109,7 @@ export default function MonthlyExpensesPage() {
 
       const data = await res.json();
       if (data.success) {
-        setSuccessMessage("Expense added successfully (செலவு வெற்றிகரமாகச் சேர்க்கப்பட்டது)");
+        setSuccessMessage("Expense added successfully");
         setTitle("");
         setAmount("");
         setNotes("");
@@ -182,14 +182,14 @@ export default function MonthlyExpensesPage() {
         <div>
           <div className="flex items-center gap-2">
             <span className="text-xs font-mono font-bold uppercase tracking-wider text-yellow-400">
-              Studio Expense Control
+              Expense Control
             </span>
             <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-400">
               ₹ INR Currency
             </span>
           </div>
           <h1 className="text-3xl font-extrabold text-white tracking-tight mt-1 flex items-center gap-3">
-            Monthly Expenses (மாத செலவுகள்)
+            Monthly Expenses
           </h1>
           <p className="text-xs text-zinc-400 mt-1">
             Track and manage your real operational expenses, hosting, software, and tools in Indian Rupees.
@@ -210,7 +210,7 @@ export default function MonthlyExpensesPage() {
             className="px-4 py-2.5 rounded-full bg-yellow-400 text-black font-bold text-xs uppercase tracking-wider hover:bg-yellow-300 transition-all flex items-center gap-1.5 shadow-sm cursor-pointer"
           >
             <Plus className="w-4 h-4" />
-            <span>{showAddForm ? "Close Form" : "Add Expense (செலவைச் சேர்)"}</span>
+            <span>{showAddForm ? "Close Form" : "Add Expense"}</span>
           </button>
         </div>
       </div>
@@ -305,8 +305,8 @@ export default function MonthlyExpensesPage() {
                 <Plus className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-white">Record New Studio Expense</h3>
-                <p className="text-xs text-zinc-400">Add an expenditure in Rupees (₹) to accurately monitor monthly studio budget.</p>
+                <h3 className="text-lg font-bold text-white">Record New Expense</h3>
+                <p className="text-xs text-zinc-400">Add an expenditure in Rupees (₹) to accurately monitor monthly operational budget.</p>
               </div>
             </div>
             <button
@@ -424,7 +424,7 @@ export default function MonthlyExpensesPage() {
               disabled={submitting}
               className="px-6 py-2.5 rounded-full bg-yellow-400 text-black font-bold text-xs uppercase tracking-wider hover:bg-yellow-300 transition-colors cursor-pointer disabled:opacity-50"
             >
-              {submitting ? "Saving..." : "Save Expense (சேமி)"}
+              {submitting ? "Saving..." : "Save Expense"}
             </button>
           </div>
         </form>

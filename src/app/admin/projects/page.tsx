@@ -7,7 +7,6 @@ import {
   FolderGit2, 
   Plus, 
   Search, 
-  ExternalLink, 
   CheckCircle2, 
   Send, 
   Receipt, 
@@ -171,7 +170,7 @@ export default function AdminProjectsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="text-xs font-mono font-bold uppercase tracking-wider text-yellow-400 block mb-1">
-            Studio Portfolio & Deliverables
+            Client Portfolio & Deliverables
           </span>
           <h1 className="text-3xl font-extrabold text-white tracking-tight">Project Management</h1>
         </div>
@@ -270,16 +269,6 @@ export default function AdminProjectsPage() {
                     <Receipt className="w-3 h-3" />
                     <span>Bill Invoice</span>
                   </button>
-
-                  {/* View Portal Link */}
-                  <Link
-                    href={`/client/project/${proj.id}`}
-                    target="_blank"
-                    className="p-2 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white transition-colors"
-                    title="Open Client Verification Portal"
-                  >
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </Link>
 
                   {/* Delete */}
                   <button

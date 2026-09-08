@@ -66,7 +66,7 @@ export default function AdminLoginPage() {
           href="/"
           className="text-xs font-mono uppercase tracking-wider text-zinc-400 hover:text-white flex items-center gap-1 transition-colors"
         >
-          <ArrowLeft className="w-3.5 h-3.5" /> Back to Studio
+          <ArrowLeft className="w-3.5 h-3.5" /> Back to Website
         </Link>
       </div>
 
@@ -77,9 +77,9 @@ export default function AdminLoginPage() {
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-yellow-400/10 border border-yellow-400/20 text-yellow-400 text-xs font-mono font-bold uppercase tracking-wider mb-3">
               <Shield className="w-3.5 h-3.5" /> Administrative Hub
             </div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Private Studio Admin Access</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">Private Admin Access</h1>
             <p className="text-xs text-zinc-400 mt-1.5 leading-relaxed">
-              Restricted area. Only authorized Gen-M Studio administrators can access this portal to review enquiries, manage bookings, and view client projects.
+              Restricted area. Only authorized Gen-M Tech administrators can access this portal to review enquiries, manage bookings, and view client projects.
             </p>
           </div>
 
@@ -125,23 +125,16 @@ export default function AdminLoginPage() {
               disabled={loading}
               className="w-full mt-2 py-3.5 rounded-full bg-yellow-400 text-black font-bold text-xs uppercase tracking-wider hover:bg-yellow-300 transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
             >
-              {loading ? "Verifying Authority..." : "Enter Studio Dashboard"}
+              {loading ? "Verifying Authority..." : "Enter Admin Dashboard"}
               <ArrowRight className="w-4 h-4" />
             </button>
           </form>
-
-          <div className="pt-2 border-t border-zinc-900 flex justify-between items-center text-xs text-zinc-500">
-            <span>Client login?</span>
-            <Link href="/client/login" className="text-yellow-400 hover:underline">
-              Client Portal Access →
-            </Link>
-          </div>
         </div>
       </div>
 
       {/* Footer */}
       <div className="text-center py-4 text-xs text-zinc-600 font-mono">
-        © {new Date().getFullYear()} GEN-M Studio Security System. All rights reserved.
+        © {new Date().getFullYear()} GEN-M Tech Security System. All rights reserved.
       </div>
     </div>
   );

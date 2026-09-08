@@ -98,7 +98,7 @@ export default function AdminDashboardPage() {
   if (loading) {
     return (
       <div className="py-20 text-center font-mono text-xs text-zinc-500">
-        Aggregating studio telemetry and bookings...
+        Aggregating system telemetry and bookings...
       </div>
     );
   }
@@ -140,9 +140,9 @@ export default function AdminDashboardPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="text-xs font-mono font-bold uppercase tracking-wider text-yellow-400 block mb-1">
-            Gen-M Studio Admin Control
+            Gen-M Tech Admin Control
           </span>
-          <h1 className="text-3xl font-extrabold text-white tracking-tight">Executive Studio Dashboard</h1>
+          <h1 className="text-3xl font-extrabold text-white tracking-tight">Executive Dashboard</h1>
           <div className="flex items-center gap-3 mt-1.5 flex-wrap">
             <p className="text-xs text-zinc-400">Logged in as admin.genm@gmail.com</p>
             <span className="text-zinc-700">•</span>
@@ -218,7 +218,7 @@ export default function AdminDashboardPage() {
                 </span>
               </div>
               <h2 className="text-2xl font-black text-white tracking-tight mt-1">
-                Studio Profit & Revenue Breakdown
+                Company Profit & Revenue Breakdown
               </h2>
               <p className="text-xs text-zinc-400 mt-0.5">
                 Calculated in Indian Rupees (₹) based on verified client invoices, collections, and recorded monthly expenses.
@@ -230,7 +230,7 @@ export default function AdminDashboardPage() {
               href="/admin/expenses"
               className="px-4 py-2 rounded-xl bg-red-500/10 border border-red-500/30 text-xs font-mono text-red-400 hover:bg-red-500/20 transition-colors flex items-center gap-1.5"
             >
-              <Receipt className="w-3.5 h-3.5" /> Manage Expenses (செலவுகள்)
+              <Receipt className="w-3.5 h-3.5" /> Manage Expenses
             </Link>
             <Link
               href="/admin/invoices"
@@ -252,7 +252,7 @@ export default function AdminDashboardPage() {
           <div className="p-5 rounded-2xl bg-zinc-900/70 border border-emerald-500/30 flex flex-col justify-between gap-3">
             <div className="flex items-center justify-between">
               <span className="text-xs font-mono text-emerald-400 font-bold uppercase tracking-wider">
-                This Month Net Profit (இந்த மாத நிகர லாபம்)
+                This Month Net Profit
               </span>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-semibold border border-emerald-500/30">
                 {stats?.profitMarginPercent || 0}% Net Margin
@@ -263,7 +263,7 @@ export default function AdminDashboardPage() {
                 ₹{(stats?.monthlyProfit || 0).toLocaleString('en-IN')}
               </span>
               <p className="text-[11px] text-zinc-400 mt-1.5">
-                Real studio earnings: Revenue (₹{(stats?.monthlyRevenue || 0).toLocaleString('en-IN')}) minus Monthly Expenses (₹{(stats?.monthlyExpenses || 0).toLocaleString('en-IN')}).
+                Real company earnings: Revenue (₹{(stats?.monthlyRevenue || 0).toLocaleString('en-IN')}) minus Monthly Expenses (₹{(stats?.monthlyExpenses || 0).toLocaleString('en-IN')}).
               </p>
             </div>
           </div>
@@ -271,7 +271,7 @@ export default function AdminDashboardPage() {
           <div className="p-5 rounded-2xl bg-zinc-900/50 border border-zinc-800 flex flex-col justify-between gap-3">
             <div className="flex items-center justify-between">
               <span className="text-xs font-mono text-yellow-400 font-bold uppercase tracking-wider">
-                Gross Cleared Collections (மொத்த வசூல்)
+                Gross Cleared Collections
               </span>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-yellow-400/10 text-yellow-400 font-semibold border border-yellow-400/20">
                 This Month
@@ -290,7 +290,7 @@ export default function AdminDashboardPage() {
           <div className="p-5 rounded-2xl bg-zinc-900/50 border border-zinc-800 flex flex-col justify-between gap-3">
             <div className="flex items-center justify-between">
               <span className="text-xs font-mono text-red-400 font-bold uppercase tracking-wider">
-                Monthly Expenses (மாத செலவுகள்)
+                Monthly Expenses
               </span>
               <Link 
                 href="/admin/expenses" 
@@ -304,7 +304,7 @@ export default function AdminDashboardPage() {
                 ₹{(stats?.monthlyExpenses || 0).toLocaleString('en-IN')}
               </span>
               <p className="text-[11px] text-zinc-400 mt-1.5">
-                Hosting, software licenses, domain renewals, and studio expenses. Lifetime: <strong className="text-zinc-300">₹{(stats?.totalExpenses || 0).toLocaleString('en-IN')}</strong>
+                Hosting, software licenses, domain renewals, and operational expenses. Lifetime: <strong className="text-zinc-300">₹{(stats?.totalExpenses || 0).toLocaleString('en-IN')}</strong>
               </p>
             </div>
           </div>
@@ -630,7 +630,7 @@ export default function AdminDashboardPage() {
                 href="/admin/cms"
                 className="p-3 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-yellow-400/60 text-xs font-semibold text-zinc-200 transition-colors flex items-center justify-between"
               >
-                <span>Edit CMS Services & Testimonials</span>
+                <span>Edit CMS Services & Deliverables</span>
                 <ArrowUpRight className="w-3.5 h-3.5 text-yellow-400" />
               </Link>
               <Link

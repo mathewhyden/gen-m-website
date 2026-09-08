@@ -57,7 +57,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { name: "Enquiries & Leads", href: "/admin/enquiries", icon: Inbox },
     { name: "Invoices", href: "/admin/invoices", icon: Receipt },
     { name: "Payments & Ledger", href: "/admin/payments", icon: CreditCard },
-    { name: "Team Photos", href: "/team-photos", icon: Camera },
     { name: "CMS Content", href: "/admin/cms", icon: FileEdit },
     { name: "Email Logs", href: "/admin/email-logs", icon: MailCheck },
   ];
