@@ -9,7 +9,7 @@ export async function PATCH(
     const { id } = await params;
     const body = await req.json();
 
-    const updated = db.updateBooking(id, body);
+    const updated = await db.updateBooking(id, body);
     if (!updated) {
       return NextResponse.json({ error: 'Booking not found' }, { status: 404 });
     }

@@ -7,7 +7,7 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const invoice = db.getInvoiceById(id);
+    const invoice = await db.getInvoiceById(id);
 
     if (!invoice) {
       return NextResponse.json({ error: 'Invoice not found' }, { status: 404 });
@@ -27,7 +27,7 @@ export async function PATCH(
     const { id } = await params;
     const body = await req.json();
 
-    const updated = db.updateInvoice(id, body);
+    const updated = await db.updateInvoice(id, body);
     if (!updated) {
       return NextResponse.json({ error: 'Invoice not found' }, { status: 404 });
     }

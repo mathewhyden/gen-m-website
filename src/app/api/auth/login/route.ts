@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Email and password are required' }, { status: 400 });
     }
 
-    const user = db.findUserByEmail(cleanEmail);
+    const user = await db.findUserByEmail(cleanEmail);
 
     const isMatch = user && (
       user.password === cleanPassword ||

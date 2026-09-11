@@ -10,7 +10,9 @@ import {
   ArrowUpRight, 
   CheckCircle2, 
   Archive,
-  Clock
+  Clock,
+  MessageCircle,
+  RefreshCw
 } from "lucide-react";
 import { Enquiry } from "@/lib/types";
 
@@ -105,11 +107,33 @@ export default function AdminEnquiriesPage() {
                   <span className="text-[10px] font-mono text-zinc-600">Submitted on: {new Date(enq.createdAt).toLocaleString()}</span>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap lg:flex-nowrap items-center gap-2.5 flex-shrink-0">
+                  {enq.phone && (
+                    <>
+                      <a
+                        href={`https://wa.me/${enq.phone.replace(/[^0-9]/g, "").length === 10 ? "91" + enq.phone.replace(/[^0-9]/g, "") : enq.phone.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(`Hello ${enq.name}, thank you for reaching out to Gen-M Tech regarding your ${enq.service} project!`)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-3.5 py-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-xs font-semibold hover:bg-emerald-500 hover:text-black transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
+                        title="Chat on WhatsApp"
+                      >
+                        <MessageCircle className="w-3.5 h-3.5" />
+                        <span>WhatsApp</span>
+                      </a>
+                      <a
+                        href={`tel:${enq.phone}`}
+                        className="px-3.5 py-2 rounded-xl bg-yellow-400/10 text-yellow-400 border border-yellow-400/30 text-xs font-semibold hover:bg-yellow-400 hover:text-black transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
+                        title="Call Lead"
+                      >
+                        <Phone className="w-3.5 h-3.5" />
+                        <span>Call</span>
+                      </a>
+                    </>
+                  )}
                   <select
                     value={enq.status}
                     onChange={(e) => handleStatusChange(enq.id, e.target.value)}
-                    className="bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-zinc-300 font-mono focus:outline-none focus:border-yellow-400"
+                    className="bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-xs text-zinc-300 font-mono focus:outline-none focus:border-yellow-400 cursor-pointer"
                   >
                     <option value="NEW">NEW</option>
                     <option value="CONTACTED">CONTACTED</option>

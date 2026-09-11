@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
     const featured = searchParams.get('featured');
     const clientId = searchParams.get('clientId');
 
-    let projects = db.getProjects();
+    let projects = await db.getProjects();
 
     if (clientId) {
       projects = projects.filter(p => p.clientId === clientId);
@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Project name is required' }, { status: 400 });
     }
 
-    const newProject = db.createProject(body);
+    const newProject = await db.createProject(body);
 
     // Notify client if clientEmail provided
     if (newProject.clientEmail) {

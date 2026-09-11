@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Syne, Outfit, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import Providers from "@/components/Providers";
+import PromoBanner from "@/components/PromoBanner";
 
 const syne = Syne({
   variable: "--font-syne",
@@ -83,7 +84,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta property="og:image:height" content="630" />
       </head>
       <body className="min-h-full flex flex-col bg-black text-white font-sans">
-        <Providers>{children}</Providers>
+        <Providers>
+          {children}
+          <PromoBanner />
+        </Providers>
       </body>
     </html>
   );

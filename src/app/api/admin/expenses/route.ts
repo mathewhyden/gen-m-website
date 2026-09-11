@@ -3,8 +3,8 @@ import { db } from '@/lib/db';
 
 export async function GET() {
   try {
-    const expenses = db.getExpenses();
-    const stats = db.getAdminStats();
+    const expenses = await db.getExpenses();
+    const stats = await db.getAdminStats();
     return NextResponse.json({
       success: true,
       expenses,
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
       }, { status: 400 });
     }
 
-    const newExpense = db.createExpense({
+    const newExpense = await db.createExpense({
       title: title.trim(),
       category: category.trim(),
       amount: Math.round(amount),
@@ -39,7 +39,7 @@ export async function POST(request: Request) {
       notes: notes?.trim() || '',
     });
 
-    const stats = db.getAdminStats();
+    const stats = await db.getAdminStats();
 
     return NextResponse.json({
       success: true,
@@ -62,12 +62,12 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ success: false, error: 'Expense ID is required' }, { status: 400 });
     }
 
-    const deleted = db.deleteExpense(id);
+    const deleted = await db.deleteExpense(id);
     if (!deleted) {
       return NextResponse.json({ success: false, error: 'Expense not found' }, { status: 404 });
     }
 
-    const stats = db.getAdminStats();
+    const stats = await db.getAdminStats();
 
     return NextResponse.json({
       success: true,

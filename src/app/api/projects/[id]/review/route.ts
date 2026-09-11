@@ -7,14 +7,14 @@ export async function POST(
 ) {
   try {
     const { id } = await params;
-    const project = db.getProjectById(id);
+    const project = await db.getProjectById(id);
 
     if (!project) {
       return NextResponse.json({ error: 'Project not found' }, { status: 404 });
     }
 
     // Update status to CLIENT_REVIEW
-    const updated = db.updateProject(id, {
+    const updated = await db.updateProject(id, {
       status: 'CLIENT_REVIEW',
       progress: Math.max(project.progress, 90),
     });
@@ -27,7 +27,7 @@ export async function POST(
       data: {
         projectId: project.id,
         projectName: project.name,
-        reviewUrl: `/client/project/${project.id}`,
+        reviewUrl: `/work/${project.slug || project.id}`,
       }
     });
 

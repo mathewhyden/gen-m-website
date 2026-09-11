@@ -14,7 +14,8 @@ import {
   Edit3, 
   X,
   Sparkles,
-  AlertCircle
+  AlertCircle,
+  Loader2
 } from "lucide-react";
 import { Project, ProjectStatus } from "@/lib/types";
 
@@ -24,6 +25,33 @@ export default function AdminProjectsPage() {
   const [search, setSearch] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [notification, setNotification] = useState("");
+  const [generatingInvoiceId, setGeneratingInvoiceId] = useState<string | null>(null);
+  const [uploadingCover, setUploadingCover] = useState(false);
+
+  const handleUploadCover = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingCover(true);
+    try {
+      const body = new FormData();
+      body.append("file", file);
+      body.append("folder", "projects");
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body,
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Upload failed");
+
+      setNewProject((prev) => ({ ...prev, coverImage: data.url }));
+    } catch (err: any) {
+      alert(err.message || "Failed to upload image");
+    } finally {
+      setUploadingCover(false);
+    }
+  };
 
   // Form State for new project
   const [newProject, setNewProject] = useState({
@@ -114,6 +142,8 @@ export default function AdminProjectsPage() {
   };
 
   const handleGenerateInvoice = async (project: Project) => {
+    if (generatingInvoiceId) return;
+    setGeneratingInvoiceId(project.id);
     try {
       const res = await fetch("/api/invoices", {
         method: "POST",
@@ -142,6 +172,8 @@ export default function AdminProjectsPage() {
       setNotification(`Invoice ${data.invoice.invoiceNumber} generated!`);
     } catch (err: any) {
       alert(err.message || "Failed to create invoice");
+    } finally {
+      setGeneratingInvoiceId(null);
     }
   };
 
@@ -262,12 +294,17 @@ export default function AdminProjectsPage() {
 
                   {/* Generate Invoice */}
                   <button
+                    disabled={generatingInvoiceId === proj.id}
                     onClick={() => handleGenerateInvoice(proj)}
-                    className="px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs font-mono text-zinc-300 hover:text-emerald-400 hover:border-emerald-500/60 transition-colors flex items-center gap-1 cursor-pointer"
+                    className="px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs font-mono text-zinc-300 hover:text-emerald-400 hover:border-emerald-500/60 transition-colors flex items-center gap-1 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                     title="Generate billing invoice"
                   >
-                    <Receipt className="w-3 h-3" />
-                    <span>Bill Invoice</span>
+                    {generatingInvoiceId === proj.id ? (
+                      <Loader2 className="w-3 h-3 animate-spin text-emerald-400" />
+                    ) : (
+                      <Receipt className="w-3 h-3" />
+                    )}
+                    <span>{generatingInvoiceId === proj.id ? "Billing..." : "Bill Invoice"}</span>
                   </button>
 
                   {/* Delete */}
@@ -394,6 +431,43 @@ export default function AdminProjectsPage() {
                     onChange={(e) => setNewProject({ ...newProject, liveUrl: e.target.value })}
                     className="bg-zinc-900 border border-zinc-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-yellow-400"
                   />
+                </div>
+              </div>
+
+              {/* Cover Image Upload */}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[11px] font-mono text-zinc-400 uppercase">Cover Image (Firebase Storage Upload OR URL)</label>
+                <div className="flex items-center gap-3 bg-zinc-900/60 border border-zinc-800 p-2.5 rounded-xl">
+                  <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-zinc-900 border border-zinc-700 shrink-0">
+                    <Image
+                      src={newProject.coverImage || "/graphic-design/graphic-work-1-1.jpg"}
+                      alt="Cover Preview"
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="flex-1 flex flex-col gap-1.5">
+                    <div className="flex items-center gap-2">
+                      <label className="px-2.5 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white text-[10px] font-mono cursor-pointer border border-zinc-700 transition-colors">
+                        {uploadingCover ? "Uploading..." : "Upload File"}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleUploadCover}
+                          disabled={uploadingCover}
+                          className="hidden"
+                        />
+                      </label>
+                      {uploadingCover && <Loader2 className="w-3 h-3 animate-spin text-yellow-400" />}
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="Or enter image URL (e.g. /graphic-design/graphic-work-1-1.jpg)"
+                      value={newProject.coverImage}
+                      onChange={(e) => setNewProject({ ...newProject, coverImage: e.target.value })}
+                      className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-2.5 py-1 text-[11px] text-zinc-300 font-mono focus:outline-none focus:border-yellow-400"
+                    />
+                  </div>
                 </div>
               </div>
 

@@ -15,7 +15,7 @@ export async function POST(
       return NextResponse.json({ error: 'Feedback type and text are required' }, { status: 400 });
     }
 
-    const newFeedback = db.addFeedback(id, {
+    const newFeedback = await db.addFeedback(id, {
       type: type as 'approval' | 'change_request',
       authorName: authorName || 'Client',
       authorEmail: authorEmail || 'client@example.com',
@@ -27,7 +27,7 @@ export async function POST(
       return NextResponse.json({ error: 'Project not found' }, { status: 404 });
     }
 
-    const updatedProject = db.getProjectById(id);
+    const updatedProject = await db.getProjectById(id);
 
     return NextResponse.json({
       success: true,

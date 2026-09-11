@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'invoiceId is required' }, { status: 400 });
     }
 
-    const invoice = db.getInvoiceById(invoiceId);
+    const invoice = await db.getInvoiceById(invoiceId);
     if (!invoice) {
       return NextResponse.json({ error: 'Invoice not found' }, { status: 404 });
     }

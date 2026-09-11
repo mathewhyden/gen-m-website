@@ -64,6 +64,7 @@ export default function Navbar({ onBookClick }: { onBookClick?: () => void }) {
     { name: "About Us", href: "/about", sectionId: "about" },
     { name: "Our Services", href: "/services", sectionId: "services" },
     { name: "Our Works", href: "/work", sectionId: "work" },
+    { name: "Pay Advance", href: "/pay", sectionId: "pay" },
     { name: "Contact Us", href: "/contact", sectionId: "contact" },
   ];
 
@@ -92,6 +93,10 @@ export default function Navbar({ onBookClick }: { onBookClick?: () => void }) {
   }, [pathname]);
 
   const handleNavClick = (e: React.MouseEvent, link: typeof navLinks[0]) => {
+    if (link.href === "/pay") {
+      setIsOpen(false);
+      return;
+    }
     if (pathname === "/") {
       e.preventDefault();
       setIsOpen(false);
@@ -220,7 +225,7 @@ export default function Navbar({ onBookClick }: { onBookClick?: () => void }) {
                 return (
                   <div key={link.name}>
                     <Link
-                      href={pathname === "/" ? `#${link.sectionId}` : `/#${link.sectionId}`}
+                      href={link.href === "/pay" ? "/pay" : pathname === "/" ? `#${link.sectionId}` : `/#${link.sectionId}`}
                       onClick={(e) => handleNavClick(e, link)}
                       className={`text-2xl font-bold tracking-tight transition-colors ${
                         isSectionActive ? "text-yellow-400 font-extrabold" : "text-zinc-200 hover:text-yellow-400"

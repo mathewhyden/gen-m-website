@@ -106,6 +106,14 @@ export default function Footer() {
               </li>
               <li>
                 <Link
+                  href="/pay"
+                  className="text-sm text-yellow-400 font-semibold hover:underline transition-colors duration-200"
+                >
+                  Pay Project Advance ↗
+                </Link>
+              </li>
+              <li>
+                <Link
                   href="/#contact"
                   onClick={(e) => handleScrollTo(e, "contact")}
                   className="text-sm text-zinc-300 hover:text-yellow-400 transition-colors duration-200"

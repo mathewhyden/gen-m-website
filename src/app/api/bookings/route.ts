@@ -3,7 +3,7 @@ import { db } from '@/lib/db';
 
 export async function GET() {
   try {
-    const bookings = db.getBookings();
+    const bookings = await db.getBookings();
     return NextResponse.json({ success: true, bookings });
   } catch (error: any) {
     return NextResponse.json({ error: error.message || 'Failed to fetch bookings' }, { status: 500 });
@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Name, email, date, and time are required' }, { status: 400 });
     }
 
-    const booking = db.createBooking({
+    const booking = await db.createBooking({
       name: body.name,
       email: body.email,
       phone: body.phone || '',
@@ -28,7 +28,9 @@ export async function POST(req: NextRequest) {
       time: body.time,
       meetingType: body.meetingType || 'google_meet',
       meetingLink: body.meetingLink || 'https://meet.google.com/gen-m-consult',
-      notes: body.notes || '',
+      budget: body.budget || '',
+      notes: body.notes || body.message || '',
+      message: body.message || body.notes || '',
     });
 
     return NextResponse.json({
@@ -47,7 +49,7 @@ export async function PATCH(req: NextRequest) {
     if (!id || !status) {
       return NextResponse.json({ error: 'Booking ID and status are required' }, { status: 400 });
     }
-    const updated = db.updateBooking(id, { status: status.toLowerCase() });
+    const updated = await db.updateBooking(id, { status: status.toLowerCase() });
     if (!updated) {
       return NextResponse.json({ error: 'Booking not found' }, { status: 404 });
     }

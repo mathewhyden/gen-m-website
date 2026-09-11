@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
 
     const messageText = (body.message || '').trim() || 'Inquiry submitted via website contact form.';
 
-    const enquiry = db.createEnquiry({
+    const enquiry = await db.createEnquiry({
       name: body.name.trim(),
       email: body.email.trim(),
       phone: body.phone?.trim() || '',

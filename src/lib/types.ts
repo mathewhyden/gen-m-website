@@ -138,18 +138,26 @@ export interface Payment {
   invoiceId?: string;
   invoiceNumber?: string;
   projectId?: string;
+  projectTitle?: string;
   clientName?: string;
   payerName?: string;
   clientEmail?: string;
   payerEmail?: string;
+  clientPhone?: string;
+  totalFee?: number;
   amount: number;
+  advancePaid?: number;
+  balanceDue?: number;
   currency: string;
   gateway: string;
   method?: string;
   paymentMethod?: string;
-  status: PaymentStatus;
+  status: PaymentStatus | string;
+  paymentStatusBadge?: 'Advance Received' | 'Fully Paid' | 'Payment Pending' | string;
   transactionRef?: string;
+  utrNumber?: string;
   timestamp?: string;
+  notes?: string;
   metadata?: Record<string, unknown>;
   createdAt: string;
 }
@@ -163,6 +171,8 @@ export interface Booking {
   phone?: string;
   company?: string;
   service: string;
+  budget?: string;
+  message?: string;
   date: string;
   time: string;
   meetingType: 'google_meet' | 'zoom' | 'phone' | string;
@@ -239,9 +249,37 @@ export interface AdminStats {
   currentMonthName?: string;
   activeProjects: number;
   totalProjects: number;
+  reviewProjects?: number;
   totalBookings: number;
   upcomingBookings: number;
   pendingInvoices: number;
   totalEnquiries: number;
   newEnquiries: number;
+  recentProjects?: Project[];
+  recentBookings?: Booking[];
+  recentEnquiries?: Enquiry[];
+  recentPayments?: Payment[];
+}
+
+export interface TeamMember {
+  id: string;
+  name: string;
+  role: string;
+  quote: string;
+  image: string;
+  order: number;
+  active: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface PromoSettings {
+  enabled: boolean;
+  title: string;
+  subtitle: string;
+  mediaType: 'image' | 'video' | 'none';
+  mediaUrl: string;
+  ctaText: string;
+  ctaLink: string;
+  updatedAt?: string;
 }

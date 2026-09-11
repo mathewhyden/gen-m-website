@@ -13,7 +13,7 @@ export async function POST(
       return NextResponse.json({ error: 'Milestone title is required' }, { status: 400 });
     }
 
-    const milestone = db.addMilestone(id, {
+    const milestone = await db.addMilestone(id, {
       title: body.title,
       description: body.description || '',
       status: body.status || 'pending',
@@ -43,7 +43,7 @@ export async function PATCH(
       return NextResponse.json({ error: 'milestoneId is required' }, { status: 400 });
     }
 
-    const updated = db.updateMilestone(id, milestoneId, updates);
+    const updated = await db.updateMilestone(id, milestoneId, updates);
     if (!updated) {
       return NextResponse.json({ error: 'Milestone or Project not found' }, { status: 404 });
     }

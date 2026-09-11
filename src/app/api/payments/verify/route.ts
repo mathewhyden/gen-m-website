@@ -16,12 +16,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'invoiceId is required' }, { status: 400 });
     }
 
-    const invoice = db.getInvoiceById(invoiceId);
+    const invoice = await db.getInvoiceById(invoiceId);
     if (!invoice) {
       return NextResponse.json({ error: 'Invoice not found' }, { status: 404 });
     }
 
-    const payment = db.processPayment({
+    const payment = await db.processPayment({
       invoiceId: invoice.id,
       amount: Number(amount) || invoice.total,
       currency: currency || invoice.currency,
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
       success: true,
       message: 'Payment verified and recorded successfully',
       payment,
-      invoice: db.getInvoiceById(invoiceId),
+      invoice: await db.getInvoiceById(invoiceId),
     });
   } catch (error: any) {
     return NextResponse.json({ error: error.message || 'Payment verification failed' }, { status: 500 });

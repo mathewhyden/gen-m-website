@@ -50,11 +50,36 @@ const TOTAL_CYCLE_MS = SHUFFLE_DURATION * 1000 + HOLD_DURATION_MS;
 const CINEMATIC_BEZIER = [0.25, 1, 0.35, 1] as const;
 
 export default function BentoCardShowcase() {
+  const [members, setMembers] = useState<DeveloperMember[]>(teamData);
   const [step, setStep] = useState<number>(0);
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [containerWidth, setContainerWidth] = useState<number>(1000);
   const containerRef = useRef<HTMLDivElement>(null);
   const pauseTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Fetch dynamic team members from Firestore / API
+  useEffect(() => {
+    fetch("/api/team")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.members && Array.isArray(data.members)) {
+          const activeOnly = data.members.filter((m: any) => m.active !== false);
+          if (activeOnly.length > 0) {
+            const formatted: DeveloperMember[] = activeOnly.map((m: any, idx: number) => ({
+              num: String(idx + 1).padStart(2, "0"),
+              name: m.name,
+              role: m.role,
+              quote: m.quote,
+              image: m.image || "/team/mathew.jpg",
+            }));
+            setMembers(formatted);
+          }
+        }
+      })
+      .catch((err) => {
+        console.warn("Failed to fetch dynamic team members", err);
+      });
+  }, []);
 
   // Measure container dimensions for responsive layout
   useEffect(() => {
@@ -114,14 +139,15 @@ export default function BentoCardShowcase() {
   }, []);
 
   // Direct card selection to make that card featured (Pos A)
+  const numMembers = Math.max(1, members.length);
   const selectFeaturedCard = useCallback((cardIndex: number) => {
     setStep((currentStep) => {
-      const currentFeatured = currentStep % 3;
+      const currentFeatured = currentStep % numMembers;
       if (currentFeatured === cardIndex) return currentStep;
-      const diff = (cardIndex - currentFeatured + 3) % 3;
+      const diff = (cardIndex - currentFeatured + numMembers) % numMembers;
       return currentStep + diff;
     });
-  }, []);
+  }, [numMembers]);
 
   const isMobile = containerWidth < 768;
   const containerHeight = isMobile ? 420 : 410;
@@ -210,8 +236,8 @@ export default function BentoCardShowcase() {
     [containerWidth, containerHeight, isMobile]
   );
 
-  const currentFeaturedCardIndex = step % 3;
-  const currentFeaturedMember = teamData[currentFeaturedCardIndex];
+  const currentFeaturedCardIndex = step % numMembers;
+  const currentFeaturedMember = members[currentFeaturedCardIndex] || members[0] || teamData[0];
 
   return (
     <div
@@ -244,7 +270,7 @@ export default function BentoCardShowcase() {
         className="relative w-full overflow-hidden"
         style={{ height: `${containerHeight}px` }}
       >
-        {teamData.map((member, cardIndex) => {
+        {members.slice(0, 3).map((member, cardIndex) => {
           const posType = ((cardIndex - (step % 3) + 3) % 3) as 0 | 1 | 2;
           const pos = getPositionGeometry(posType);
           const isFeatured = pos.isFeatured;
@@ -317,14 +343,14 @@ export default function BentoCardShowcase() {
       </div>
 
       {/* Minimalist Selection Controls — OUTSIDE the circles, No icons */}
-      <div className="flex items-center justify-center gap-2 pt-1">
-        {teamData.map((d, idx) => {
+      <div className="flex items-center justify-center gap-2 pt-1 flex-wrap">
+        {members.map((d, idx) => {
           const isCurrent = currentFeaturedCardIndex === idx;
           return (
             <button
-              key={d.num}
+              key={d.num || idx}
               type="button"
-              id={`team-step-${d.num}`}
+              id={`team-step-${d.num || idx}`}
               onClick={() => selectFeaturedCard(idx)}
               className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full transition-all duration-300 font-mono text-xs border cursor-pointer ${
                 isCurrent
@@ -332,7 +358,7 @@ export default function BentoCardShowcase() {
                   : "bg-zinc-900/90 text-zinc-400 border-zinc-800 hover:border-zinc-700 hover:text-zinc-200"
               }`}
             >
-              <span className="font-bold">{d.num}</span>
+              <span className="font-bold">{d.num || String(idx + 1).padStart(2, "0")}</span>
               <span className="font-sans font-medium text-[11px]">{d.name}</span>
             </button>
           );

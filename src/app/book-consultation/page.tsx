@@ -20,6 +20,7 @@ export default function BookConsultationPage() {
     date: new Date(Date.now() + 86400000).toISOString().split('T')[0],
     time: "14:00",
     meetingType: "google_meet" as "google_meet" | "zoom" | "phone",
+    budget: "₹35,000 - ₹75,000",
     notes: "",
   });
 
@@ -241,20 +242,48 @@ export default function BookConsultationPage() {
                   </div>
                 </div>
 
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-mono uppercase tracking-wider text-zinc-400">Service of Interest</label>
+                    <select
+                      value={formData.service}
+                      onChange={(e) => setFormData({ ...formData, service: e.target.value })}
+                      className="bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-yellow-400 transition-colors"
+                    >
+                      <option value="Web Development">Web Development</option>
+                      <option value="Brand Identity">Brand Identity</option>
+                      <option value="AI Agents & Automation">AI Agents & Automation</option>
+                      <option value="Graphic Design">Graphic Design</option>
+                      <option value="Digital Marketing">Digital Marketing</option>
+                      <option value="App Development">App Development</option>
+                    </select>
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <label className="text-xs font-mono uppercase tracking-wider text-zinc-400">Estimated Budget</label>
+                    <select
+                      value={formData.budget}
+                      onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
+                      className="bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-yellow-400 transition-colors"
+                    >
+                      <option value="Under ₹25,000">Under ₹25,000</option>
+                      <option value="₹25,000 - ₹50,000">₹25,000 - ₹50,000</option>
+                      <option value="₹50,000 - ₹1,00,000">₹50,000 - ₹1,00,000</option>
+                      <option value="₹1,00,000 - ₹2,50,000">₹1,00,000 - ₹2,50,000</option>
+                      <option value="₹2,50,000+ (Enterprise)">₹2,50,000+ (Enterprise)</option>
+                    </select>
+                  </div>
+                </div>
+
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-mono uppercase tracking-wider text-zinc-400">Service of Interest</label>
-                  <select
-                    value={formData.service}
-                    onChange={(e) => setFormData({ ...formData, service: e.target.value })}
-                    className="bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-yellow-400 transition-colors"
-                  >
-                    <option value="Web Development">Web Development</option>
-                    <option value="Brand Identity">Brand Identity</option>
-                    <option value="AI Agents & Automation">AI Agents & Automation</option>
-                    <option value="Graphic Design">Graphic Design</option>
-                    <option value="Digital Marketing">Digital Marketing</option>
-                    <option value="App Development">App Development</option>
-                  </select>
+                  <label className="text-xs font-mono uppercase tracking-wider text-zinc-400">Project Goals / Message</label>
+                  <textarea
+                    rows={3}
+                    placeholder="Briefly describe what you'd like to build or discuss..."
+                    value={formData.notes}
+                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                    className="bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-yellow-400 transition-colors placeholder:text-zinc-500"
+                  />
                 </div>
 
                 <button
