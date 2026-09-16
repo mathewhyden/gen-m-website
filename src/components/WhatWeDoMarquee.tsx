@@ -118,10 +118,6 @@ export default function WhatWeDoMarquee({
     <div className="flex flex-col gap-6 w-full py-4">
       {/* Section Header - Restored Left-Aligned */}
       <div className="flex flex-col items-start gap-2">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-xs font-semibold uppercase tracking-wider text-yellow-400">
-          <Sparkles className="w-3.5 h-3.5 text-yellow-400" />
-          Core Services
-        </div>
         <div className="flex flex-col sm:flex-row sm:items-baseline justify-between w-full gap-2">
           <h3 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
             What We Do

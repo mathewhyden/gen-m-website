@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import Image from "next/image";
 import { motion } from "framer-motion";
 
 export interface DeveloperMember {
@@ -236,8 +235,13 @@ export default function BentoCardShowcase() {
     [containerWidth, containerHeight, isMobile]
   );
 
-  const currentFeaturedCardIndex = step % numMembers;
-  const currentFeaturedMember = members[currentFeaturedCardIndex] || members[0] || teamData[0];
+  // Ensure 3 active display items for complete circular choreography
+  const displayMembers: DeveloperMember[] = members.length >= 3
+    ? members.slice(0, 3)
+    : [...members, ...teamData.slice(members.length, 3)];
+
+  const currentFeaturedCardIndex = step % displayMembers.length;
+  const currentFeaturedMember = displayMembers[currentFeaturedCardIndex] || displayMembers[0] || teamData[0];
 
   return (
     <div
@@ -270,15 +274,15 @@ export default function BentoCardShowcase() {
         className="relative w-full overflow-hidden"
         style={{ height: `${containerHeight}px` }}
       >
-        {members.slice(0, 3).map((member, cardIndex) => {
+        {displayMembers.map((member, cardIndex) => {
           const posType = ((cardIndex - (step % 3) + 3) % 3) as 0 | 1 | 2;
           const pos = getPositionGeometry(posType);
           const isFeatured = pos.isFeatured;
 
           return (
             <motion.div
-              key={member.num}
-              id={`team-circle-${member.num}`}
+              key={member.num || `member-${cardIndex}`}
+              id={`team-circle-${member.num || cardIndex}`}
               onClick={() => selectFeaturedCard(cardIndex)}
               animate={{
                 x: pos.x,
@@ -305,15 +309,13 @@ export default function BentoCardShowcase() {
               }`}
             >
               {/* Image filling circular frame cleanly with object-fit: cover, NO TEXT inside */}
-              <Image
-                src={member.image}
+              <img
+                src={member.image || "/team/mathew.jpg"}
                 alt={member.name}
-                fill
-                sizes="(max-width: 768px) 65vw, 360px"
-                className="object-cover rounded-full pointer-events-none"
-                referrerPolicy="no-referrer"
-                unoptimized
-                priority
+                className="w-full h-full object-cover rounded-full pointer-events-none select-none"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = "/team/mathew.jpg";
+                }}
               />
             </motion.div>
           );

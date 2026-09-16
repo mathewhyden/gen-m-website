@@ -18,6 +18,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { PromoSettings } from "@/lib/types";
+import { compressImageToBase64 } from "@/lib/image-compression";
 
 export default function AdminPromosPage() {
   const [promo, setPromo] = useState<PromoSettings>({
@@ -59,26 +60,20 @@ export default function AdminPromosPage() {
 
     setUploadingMedia(true);
     try {
-      const body = new FormData();
-      body.append("file", file);
-      body.append("folder", "promos");
-
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body,
+      const base64Data = await compressImageToBase64(file, {
+        maxWidth: 800,
+        maxHeight: 800,
+        quality: 0.8,
       });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Upload failed");
 
       setPromo((prev) => ({
         ...prev,
         mediaType: "image",
-        mediaUrl: data.url,
+        mediaUrl: base64Data,
       }));
-      setNotification("Offer image uploaded to storage successfully!");
+      setNotification("Offer image converted to instant Base64! Remember to click Save.");
     } catch (err: any) {
-      alert(err.message || "Failed to upload image");
+      alert(err.message || "Failed to process image");
     } finally {
       setUploadingMedia(false);
     }

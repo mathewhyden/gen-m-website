@@ -263,6 +263,7 @@ export default function AdminPaymentsPage() {
           {[
             { id: "ALL", label: "ALL" },
             { id: "advance received", label: "Advance Received" },
+            { id: "payment under verification", label: "Payment Under Verification" },
             { id: "fully paid", label: "Fully Paid" },
             { id: "payment pending", label: "Payment Pending" },
           ].map((tab) => (
@@ -394,17 +395,20 @@ export default function AdminPaymentsPage() {
                     {/* Status Badge & Dropdown Selector */}
                     <div className="flex items-center gap-2">
                       <select
-                        value={isFull ? "Fully Paid" : isPending ? "Payment Pending" : "Advance Received"}
+                        value={badge.toLowerCase().includes("verification") ? "Payment Under Verification" : isFull ? "Fully Paid" : isPending ? "Payment Pending" : "Advance Received"}
                         onChange={(e) => handleStatusChange(p.id, e.target.value)}
                         className={`rounded-xl px-3 py-2 text-xs font-mono font-bold uppercase focus:outline-none cursor-pointer transition-colors border ${
-                          isFull
-                            ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
-                            : isPending
-                              ? "bg-red-500/10 text-red-400 border-red-500/30"
-                              : "bg-amber-500/10 text-amber-400 border-amber-500/30"
+                          badge.toLowerCase().includes("verification")
+                            ? "bg-blue-500/10 text-blue-400 border-blue-500/30"
+                            : isFull
+                              ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
+                              : isPending
+                                ? "bg-red-500/10 text-red-400 border-red-500/30"
+                                : "bg-amber-500/10 text-amber-400 border-amber-500/30"
                         }`}
                       >
                         <option value="Advance Received" className="bg-zinc-900 text-amber-400">Advance Received</option>
+                        <option value="Payment Under Verification" className="bg-zinc-900 text-blue-400">Payment Under Verification</option>
                         <option value="Fully Paid" className="bg-zinc-900 text-emerald-400">Fully Paid</option>
                         <option value="Payment Pending" className="bg-zinc-900 text-red-400">Payment Pending</option>
                       </select>
@@ -541,6 +545,7 @@ export default function AdminPaymentsPage() {
                     className="bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-yellow-400 cursor-pointer"
                   >
                     <option value="Advance Received">Advance Received</option>
+                    <option value="Payment Under Verification">Payment Under Verification</option>
                     <option value="Fully Paid">Fully Paid</option>
                     <option value="Payment Pending">Payment Pending</option>
                   </select>

@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { ServiceItem } from "@/lib/types";
 import MarvelServiceShowcase from "./MarvelServiceShowcase";
 import { ScrollReveal } from "./ScrollReveal";
-import { MaskWipeText, LetterSpacingExpand, TextShimmer } from "./TextAnimations";
+import { MaskWipeText, TextShimmer } from "./TextAnimations";
 
 const defaultServices: ServiceItem[] = [
   {
@@ -89,25 +89,23 @@ export default function ServicesSection({
   const [services, setServices] = useState<ServiceItem[]>(defaultServices);
 
   useEffect(() => {
-    fetch("/api/content")
+    fetch("/api/services")
       .then((res) => res.json())
       .then((data) => {
         if (data.services && data.services.length > 0) {
-          const normalized = data.services
-            .filter((s: ServiceItem) => {
-              const lower = s.id.toLowerCase() + " " + s.title.toLowerCase();
-              return !lower.includes("app-dev") && !lower.includes("app dev") && !lower.includes("crm");
-            })
-            .map((s: ServiceItem) => ({
-              ...s,
-              title: s.title.replace(/ & CRM/gi, ""),
-            }));
-          if (normalized.length > 0) {
-            setServices(normalized);
-          }
+          setServices(data.services);
         }
       })
-      .catch(() => {});
+      .catch(() => {
+        fetch("/api/content")
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.services && data.services.length > 0) {
+              setServices(data.services);
+            }
+          })
+          .catch(() => {});
+      });
   }, []);
 
   return (
@@ -117,10 +115,6 @@ export default function ServicesSection({
         <ScrollReveal delay={0.05} yOffset={20}>
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
             <div className="max-w-xl">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-900 border border-zinc-800/80 text-xs font-semibold uppercase tracking-wider text-yellow-400 mb-4">
-                <span className="w-1.5 h-1.5 rounded-full bg-yellow-400" />
-                <LetterSpacingExpand text="Our Core Services" delay={0.1} />
-              </div>
               <h2 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-white uppercase leading-[1.08]">
                 <MaskWipeText text="Designed For " delay={0.15} />
                 <TextShimmer text="Growth &amp; Impact" />

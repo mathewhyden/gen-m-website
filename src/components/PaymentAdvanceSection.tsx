@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { 
-  CreditCard, 
   QrCode, 
   Building, 
   Copy, 
@@ -24,7 +23,7 @@ export default function PaymentAdvanceSection({
   defaultAmount = 25000,
   onSuccess 
 }: PaymentAdvanceProps) {
-  const [method, setMethod] = useState<"upi" | "bank" | "gateway">("upi");
+  const [method, setMethod] = useState<"upi" | "bank">("upi");
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
   // Form State
@@ -293,7 +292,7 @@ export default function PaymentAdvanceSection({
           </span>
 
           {/* Payment Method Selector Tabs */}
-          <div className="grid grid-cols-3 gap-2 bg-zinc-900 p-1.5 rounded-2xl border border-zinc-800">
+          <div className="grid grid-cols-2 gap-2 bg-zinc-900 p-1.5 rounded-2xl border border-zinc-800">
             <button
               type="button"
               onClick={() => setMethod("upi")}
@@ -302,7 +301,7 @@ export default function PaymentAdvanceSection({
               }`}
             >
               <QrCode className="w-3.5 h-3.5" />
-              <span>UPI & QR</span>
+              <span>Direct UPI & QR (0% Fee)</span>
             </button>
             <button
               type="button"
@@ -312,17 +311,7 @@ export default function PaymentAdvanceSection({
               }`}
             >
               <Building className="w-3.5 h-3.5" />
-              <span>Bank NEFT</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setMethod("gateway")}
-              className={`py-2 px-2 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
-                method === "gateway" ? "bg-yellow-400 text-black shadow-sm font-bold" : "text-zinc-400 hover:text-white"
-              }`}
-            >
-              <CreditCard className="w-3.5 h-3.5" />
-              <span>Card / PG</span>
+              <span>Bank NEFT / IMPS (0% Fee)</span>
             </button>
           </div>
 
@@ -438,28 +427,11 @@ export default function PaymentAdvanceSection({
             </div>
           )}
 
-          {/* TAB 3: CARD & GATEWAY */}
-          {method === "gateway" && (
-            <div className="p-5 rounded-2xl bg-zinc-900/70 border border-zinc-800 flex flex-col gap-3 text-xs">
-              <div className="flex items-center gap-2 text-yellow-400 font-semibold font-mono">
-                <CreditCard className="w-4 h-4" />
-                <span>Credit / Debit Card & NetBanking</span>
-              </div>
-              <p className="text-zinc-400 text-xs leading-relaxed">
-                We accept all major Visa, Mastercard, RuPay, and American Express cards. Enter your transfer transaction ID below or connect directly to settle via gateway checkout.
-              </p>
-              <div className="flex items-center gap-2 pt-2 border-t border-zinc-800 text-[11px] font-mono text-zinc-400">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                <span>PCI-DSS Level 1 Compliant Gateway</span>
-              </div>
-            </div>
-          )}
-
           {/* Step 3: Transaction Reference / UTR Submission */}
           <div className="flex flex-col gap-1.5 pt-2">
             <label className="text-xs font-mono text-yellow-400 uppercase font-bold flex items-center justify-between">
-              <span>Payment Reference / UTR Number *</span>
-              <span className="text-[10px] text-zinc-500 font-normal">From your banking app</span>
+              <span>Payment Reference / 12-Digit UTR Number *</span>
+              <span className="text-[10px] text-zinc-500 font-normal">From your banking/UPI app</span>
             </label>
             <input
               type="text"

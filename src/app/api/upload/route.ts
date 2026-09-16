@@ -36,20 +36,27 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // 2. Fallback to public/uploads directory
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads', folder);
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
+    // 2. Persistent fallback: base64 Data URL (guarantees image never 404s or disappears)
+    const mimeType = file.type || 'image/jpeg';
+    const base64Data = buffer.toString('base64');
+    const persistentDataUrl = `data:${mimeType};base64,${base64Data}`;
+
+    // Best-effort write to local disk as well
+    try {
+      const uploadDir = path.join(process.cwd(), 'public', 'uploads', folder);
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      }
+      const filePath = path.join(uploadDir, cleanFileName);
+      fs.writeFileSync(filePath, buffer);
+    } catch {
+      // Ignore local disk write errors
     }
 
-    const filePath = path.join(uploadDir, cleanFileName);
-    fs.writeFileSync(filePath, buffer);
-
-    const publicUrl = `/uploads/${folder}/${cleanFileName}`;
     return NextResponse.json({
       success: true,
-      url: publicUrl,
-      provider: 'local',
+      url: persistentDataUrl,
+      provider: 'data-url',
     });
   } catch (error: any) {
     console.error('File upload error:', error);

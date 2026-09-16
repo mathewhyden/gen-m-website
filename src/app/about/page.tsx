@@ -14,7 +14,6 @@ import {
   MaskWipeText,
   TextShimmer,
   WordBlurIn,
-  LetterSpacingExpand,
 } from "@/components/TextAnimations";
 import { 
   ArrowRight,
@@ -32,14 +31,7 @@ export default function AboutPage() {
         {/* 1. Hero Section - Smooth Scroll Reveal */}
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center pt-6">
           <div className="lg:col-span-6 flex flex-col items-start">
-            <ScrollReveal delay={0.05} yOffset={20}>
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-yellow-400/30 bg-yellow-400/10 text-yellow-400 text-xs font-semibold uppercase tracking-wider mb-5">
-                <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse" />
-                <LetterSpacingExpand text="About Gen-M Tech" delay={0.1} />
-              </div>
-            </ScrollReveal>
-
-            <ScrollReveal delay={0.15} yOffset={25}>
+            <ScrollReveal delay={0.1} yOffset={25}>
               <h1 className="font-display text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-white uppercase leading-[1.12]">
                 <MaskWipeText text="DESIGNED TO" delay={0.15} /> <br />
                 <TextShimmer text="STAND OUT" /> &amp; DELIVER.
@@ -98,10 +90,6 @@ export default function AboutPage() {
         <section className="flex flex-col gap-8 pt-6">
           <ScrollReveal delay={0.1} yOffset={20}>
             <div className="flex flex-col items-start gap-2">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-xs font-semibold uppercase tracking-wider text-yellow-400">
-                <span className="w-1.5 h-1.5 rounded-full bg-yellow-400" />
-                <LetterSpacingExpand text="Gen-M Tech Values" delay={0.1} />
-              </div>
               <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
                 <MaskWipeText text="Who We Are" delay={0.15} />
               </h2>

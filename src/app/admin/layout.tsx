@@ -24,7 +24,8 @@ import {
   Sun,
   Moon,
   Users,
-  Megaphone
+  Megaphone,
+  Layers
 } from "lucide-react";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -66,7 +67,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { name: "Leads & Briefs", href: "/admin/enquiries", icon: Inbox },
     { name: "Invoices", href: "/admin/invoices", icon: Receipt },
     { name: "Payments & Financials", href: "/admin/payments", icon: CreditCard },
-    { name: "Services & Pricing Editor", href: "/admin/cms", icon: FileEdit },
+    { name: "Services Editor", href: "/admin/services", icon: Layers },
     { name: "Email Logs", href: "/admin/email-logs", icon: MailCheck },
   ];
 

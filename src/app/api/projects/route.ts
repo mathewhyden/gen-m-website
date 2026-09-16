@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
+import { db, deduplicateProjectsList } from '@/lib/db';
 import { getSessionUser } from '@/lib/auth';
 
 export async function GET(req: NextRequest) {
@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
     const featured = searchParams.get('featured');
     const clientId = searchParams.get('clientId');
 
-    let projects = await db.getProjects();
+    let projects = deduplicateProjectsList(await db.getProjects());
 
     if (clientId) {
       projects = projects.filter(p => p.clientId === clientId);

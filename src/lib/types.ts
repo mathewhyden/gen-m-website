@@ -211,11 +211,16 @@ export interface ServiceItem {
   id: string;
   title: string;
   description: string;
+  coverImage?: string;
+  image?: string;
+  shortTitle?: string;
+  category?: string;
+  slug?: string;
   icon?: string;
   iconName?: string;
   badge?: string;
   priceRange?: string;
-  features: string[];
+  features?: string[];
 }
 
 export interface Testimonial {

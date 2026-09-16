@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
 import {
   Users,
   Plus,
@@ -17,6 +16,9 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { TeamMember } from "@/lib/types";
+import { compressImageToBase64 } from "@/lib/image-compression";
+
+const DEFAULT_AVATAR = "/team/mathew.jpg";
 
 export default function AdminTeamPage() {
   const [members, setMembers] = useState<TeamMember[]>([]);
@@ -26,6 +28,8 @@ export default function AdminTeamPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMember, setEditingMember] = useState<TeamMember | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState("");
+  const [previewUrl, setPreviewUrl] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Form State
@@ -33,7 +37,7 @@ export default function AdminTeamPage() {
     name: "",
     role: "",
     quote: "",
-    image: "/team/mathew.jpg",
+    image: DEFAULT_AVATAR,
     order: 1,
     active: true,
   });
@@ -59,11 +63,13 @@ export default function AdminTeamPage() {
 
   const openAddModal = () => {
     setEditingMember(null);
+    setPreviewUrl(DEFAULT_AVATAR);
+    setUploadStatus("");
     setFormData({
       name: "",
       role: "",
       quote: "",
-      image: "/team/mathew.jpg",
+      image: DEFAULT_AVATAR,
       order: members.length + 1,
       active: true,
     });
@@ -72,11 +78,14 @@ export default function AdminTeamPage() {
 
   const openEditModal = (member: TeamMember) => {
     setEditingMember(member);
+    const initialImg = member.image || DEFAULT_AVATAR;
+    setPreviewUrl(initialImg);
+    setUploadStatus("");
     setFormData({
       name: member.name,
       role: member.role,
       quote: member.quote,
-      image: member.image || "/team/mathew.jpg",
+      image: initialImg,
       order: member.order ?? 1,
       active: member.active ?? true,
     });
@@ -88,23 +97,24 @@ export default function AdminTeamPage() {
     if (!file) return;
 
     setUploadingImage(true);
-    try {
-      const body = new FormData();
-      body.append("file", file);
-      body.append("folder", "team");
+    setUploadStatus("Processing...");
 
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body,
+    try {
+      // 1. Instant client-side resize & base64 conversion (0ms network overhead)
+      const base64Data = await compressImageToBase64(file, {
+        maxWidth: 800,
+        maxHeight: 800,
+        quality: 0.8,
       });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Image upload failed");
-
-      setFormData((prev) => ({ ...prev, image: data.url }));
-      setNotification("Photo uploaded successfully!");
+      // 2. Reactive preview & state update immediately
+      setPreviewUrl(base64Data);
+      setFormData((prev) => ({ ...prev, image: base64Data }));
+      setUploadStatus("Ready");
+      setNotification("Photo converted to instant Base64! Click Save/Update to persist.");
     } catch (err: any) {
-      alert(err.message || "Failed to upload photo");
+      alert(err.message || "Failed to process photo");
+      setUploadStatus("");
     } finally {
       setUploadingImage(false);
     }
@@ -315,13 +325,14 @@ export default function AdminTeamPage() {
               <div>
                 {/* Card Top: Photo + Badges */}
                 <div className="flex items-start justify-between gap-4 mb-4">
-                  <div className="relative w-16 h-16 rounded-2xl overflow-hidden border border-zinc-700/80 bg-zinc-900 shrink-0">
-                    <Image
-                      src={member.image || "/team/mathew.jpg"}
+                  <div className="relative w-16 h-16 rounded-2xl overflow-hidden border border-zinc-700/80 bg-zinc-900 shrink-0 flex items-center justify-center">
+                    <img
+                      src={member.image || DEFAULT_AVATAR}
                       alt={member.name}
-                      fill
-                      className="object-cover"
-                      sizes="64px"
+                      className="w-full h-full object-cover rounded-2xl"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = DEFAULT_AVATAR;
+                      }}
                     />
                   </div>
 
@@ -470,16 +481,18 @@ export default function AdminTeamPage() {
               {/* Photo Upload & URL */}
               <div className="space-y-2">
                 <label className="text-[11px] font-mono uppercase text-zinc-400">
-                  Profile Photo (File Upload to Firebase Storage OR Image URL)
+                  Profile Photo (Instant Base64 Upload OR Image URL)
                 </label>
                 
                 <div className="flex items-center gap-4 bg-zinc-900/60 border border-zinc-800 p-3 rounded-2xl">
-                  <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-zinc-900 border border-zinc-700 shrink-0">
-                    <Image
-                      src={formData.image || "/team/mathew.jpg"}
+                  <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-zinc-900 border border-zinc-700 shrink-0 flex items-center justify-center">
+                    <img
+                      src={previewUrl || formData.image || DEFAULT_AVATAR}
                       alt="Preview"
-                      fill
-                      className="object-cover"
+                      className="w-full h-full object-cover rounded-xl"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = DEFAULT_AVATAR;
+                      }}
                     />
                   </div>
 
@@ -487,7 +500,7 @@ export default function AdminTeamPage() {
                     <div className="flex items-center gap-2">
                       <label className="px-3 py-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white text-[11px] font-mono flex items-center gap-1.5 cursor-pointer transition-colors border border-zinc-700">
                         <Upload className="w-3 h-3 text-yellow-400" />
-                        {uploadingImage ? "Uploading..." : "Upload File"}
+                        {uploadingImage ? "Processing..." : "Upload Profile Photo"}
                         <input
                           type="file"
                           accept="image/*"
@@ -497,13 +510,22 @@ export default function AdminTeamPage() {
                         />
                       </label>
                       {uploadingImage && <Loader2 className="w-3.5 h-3.5 animate-spin text-yellow-400" />}
+                      {uploadStatus && (
+                        <span className="text-[10px] font-mono text-yellow-400/90 truncate max-w-[180px]">
+                          {uploadStatus}
+                        </span>
+                      )}
                     </div>
 
                     <input
                       type="text"
-                      placeholder="Or paste direct image URL (e.g. /team/mathew.jpg)"
+                      placeholder="Or paste direct image URL (e.g. https://... or /team/mathew.jpg)"
                       value={formData.image}
-                      onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setFormData({ ...formData, image: val });
+                        setPreviewUrl(val);
+                      }}
                       className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-2.5 py-1 text-[11px] text-zinc-300 font-mono focus:outline-none focus:border-yellow-400"
                     />
                   </div>

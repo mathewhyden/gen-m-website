@@ -29,6 +29,17 @@ import { db as firestore, isFirebaseConfigured } from './firebase';
 
 const STORE_PATH = path.join(process.cwd(), '.data', 'db_store.json');
 
+export function getFallbackServiceImage(title: string): string {
+  const t = (title || "").toLowerCase();
+  if (t.includes("web") || t.includes("site")) return "/services/web-development.jpg";
+  if (t.includes("brand") || t.includes("ident")) return "/services/brand-identity.jpg";
+  if (t.includes("graphic") || t.includes("visual") || t.includes("art")) return "/services/graphic-design.jpg";
+  if (t.includes("market") || t.includes("seo") || t.includes("growth")) return "/services/digital-marketing.jpg";
+  if (t.includes("ai") || t.includes("agent") || t.includes("bot")) return "/services/ai-agents.jpg";
+  if (t.includes("app") || t.includes("mobile") || t.includes("ios")) return "/services/app-development.jpg";
+  return "/services/web-development.jpg";
+}
+
 function saveStoreToDisk(
   bookings: Booking[], 
   enquiries: Enquiry[], 
@@ -37,14 +48,15 @@ function saveStoreToDisk(
   invoices: Invoice[] = [],
   projects?: Project[],
   team?: TeamMember[],
-  promo?: PromoSettings
+  promo?: PromoSettings,
+  services?: ServiceItem[]
 ) {
   try {
     const dir = path.dirname(STORE_PATH);
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
-    fs.writeFileSync(STORE_PATH, JSON.stringify({ bookings, enquiries, expenses, payments, invoices, projects, team, promo }, null, 2), 'utf-8');
+    fs.writeFileSync(STORE_PATH, JSON.stringify({ bookings, enquiries, expenses, payments, invoices, projects, team, promo, services }, null, 2), 'utf-8');
   } catch (err) {
     console.error('Failed to save store to disk:', err);
   }
@@ -59,6 +71,7 @@ function loadStoreFromDisk(): {
   projects?: Project[];
   team?: TeamMember[];
   promo?: PromoSettings;
+  services?: ServiceItem[];
 } | null {
   try {
     if (fs.existsSync(STORE_PATH)) {
@@ -345,58 +358,54 @@ const initialPromo: PromoSettings = {
 
 const initialServices: ServiceItem[] = [
   {
+    id: 'srv-web',
+    title: 'WEB DEVELOPMENT',
+    description: 'Modern, responsive and high-performance websites built for real businesses and brands.',
+    coverImage: '/services/web-development.jpg',
+    image: '/services/web-development.jpg',
+    category: 'Core Engineering',
+    shortTitle: 'WEB DEV',
+    slug: 'web-development',
+  },
+  {
     id: 'srv-branding',
-    title: 'Brand Identity',
-    description: 'Distinct visual identity systems, typography pairings, color theories, and comprehensive brand books that command authority.',
-    iconName: 'Palette',
-    features: ['Brand Guidelines & Systems', 'Typography & Color Mastery', 'Vector Logos & Marks', 'Print & Digital Collateral'],
-    badge: 'Core Foundation',
-    priceRange: 'From ₹25,000',
+    title: 'BRANDING',
+    description: 'Strategic visual identities that make brands recognizable, memorable and consistent.',
+    coverImage: '/services/brand-identity.jpg',
+    image: '/services/brand-identity.jpg',
+    category: 'Brand Identity',
+    shortTitle: 'BRANDING',
+    slug: 'branding',
   },
   {
     id: 'srv-graphic',
-    title: 'Graphic Design',
-    description: 'High-impact visual creatives, pitch decks, exhibition visuals, marketing assets, and product packaging crafted with precision.',
-    iconName: 'Sparkles',
-    features: ['Campaign & Social Creatives', 'Pitch Decks & Presentations', 'Packaging & Print Production', 'Exhibition & Vector Art'],
-    badge: 'Visual Design',
-    priceRange: 'From ₹15,000',
+    title: 'GRAPHIC DESIGN',
+    description: 'Creative visual communication, marketing materials, social media designs and digital artwork.',
+    coverImage: '/services/graphic-design.jpg',
+    image: '/services/graphic-design.jpg',
+    category: 'Visual Design',
+    shortTitle: 'GRAPHIC DESIGN',
+    slug: 'graphic-design',
   },
   {
     id: 'srv-marketing',
-    title: 'Digital Marketing',
-    description: 'Data-driven growth funnels, conversion rate optimization, search ranking dominance, and precision paid ad campaigns.',
-    iconName: 'TrendingUp',
-    features: ['Conversion Funnel Architecture', 'Technical SEO Mastery', 'Performance Ad Scaling', 'Lifecycle Email Marketing'],
-    badge: 'Marketing & Growth',
-    priceRange: 'From ₹20,000/mo',
+    title: 'DIGITAL MARKETING',
+    description: 'Creative digital strategies that help brands reach the right audience and grow online.',
+    coverImage: '/services/digital-marketing.jpg',
+    image: '/services/digital-marketing.jpg',
+    category: 'Growth Strategy',
+    shortTitle: 'MARKETING',
+    slug: 'digital-marketing',
   },
   {
     id: 'srv-ai',
-    title: 'AI Agents & Automation',
-    description: 'Bespoke autonomous AI agents, enterprise workflow automations, and LLM-powered business intelligence engines.',
-    iconName: 'Brain',
-    features: ['Autonomous AI Agent Fleets', 'Internal Workflow Automation', 'Custom LLM Fine-Tuning', 'Predictive Business Logic'],
-    badge: 'Next-Gen',
-    priceRange: 'From ₹45,000',
-  },
-  {
-    id: 'srv-web',
-    title: 'Web Development',
-    description: 'High-performance Next.js web applications, blazing-fast landing experiences, headless CMS architectures, and custom portals.',
-    iconName: 'Monitor',
-    features: ['Next.js 16 & React 19', 'Sub-second Page Speeds', 'Custom Admin Dashboards', 'Headless CMS & Commerce'],
-    badge: 'Flagship',
-    priceRange: 'From ₹35,000',
-  },
-  {
-    id: 'srv-app',
-    title: 'App Development',
-    description: 'Cross-platform mobile applications for iOS and Android, built with speed, reliability, and modern UI.',
-    iconName: 'Smartphone',
-    features: ['iOS & Android Apps', 'Cross-Platform Experience', 'Real-time Push Notifications', 'API & Database Integration'],
-    badge: 'Full-Stack',
-    priceRange: 'From ₹50,000',
+    title: 'AI AGENTS',
+    description: 'Intelligent AI-powered agents designed to automate tasks, improve workflows and create smarter digital experiences.',
+    coverImage: '/services/ai-agents.jpg',
+    image: '/services/ai-agents.jpg',
+    category: 'Smart Automation',
+    shortTitle: 'AI AGENTS',
+    slug: 'ai-agents',
   }
 ];
 
@@ -442,7 +451,7 @@ function getDatabase(): GlobalDatabase {
       payments: saved?.payments || [],
       expenses: saved?.expenses || [],
       emailLogs: initialEmailLogs,
-      services: initialServices,
+      services: saved?.services || initialServices,
       testimonials: initialTestimonials,
       team: saved?.team || initialTeam,
       promo: saved?.promo || initialPromo,
@@ -459,6 +468,7 @@ function getDatabase(): GlobalDatabase {
   if (!dbInstance.invoices) dbInstance.invoices = [];
   if (!dbInstance.team || dbInstance.team.length === 0) dbInstance.team = initialTeam;
   if (!dbInstance.promo) dbInstance.promo = initialPromo;
+  if (!dbInstance.services || dbInstance.services.length === 0) dbInstance.services = initialServices;
   
   const adminUser = dbInstance.users.find(u => u.email.toLowerCase() === 'admin.genm@gmail.com');
   if (adminUser) adminUser.password = 'Mathew@0208';
@@ -466,6 +476,33 @@ function getDatabase(): GlobalDatabase {
   if (mathewUser) mathewUser.password = 'Mathew@0208';
 
   return dbInstance;
+}
+
+export function deduplicateProjectsList<T extends { id?: string; name?: string; slug?: string; title?: string; projectId?: string }>(list: T[]): T[] {
+  if (!Array.isArray(list)) return [];
+  const seenIds = new Set<string>();
+  const seenTitles = new Set<string>();
+  const seenSlugs = new Set<string>();
+  const unique: T[] = [];
+
+  for (const item of list) {
+    if (!item) continue;
+    const idKey = (item.id || "").trim().toLowerCase();
+    const slugKey = (item.slug || "").trim().toLowerCase();
+    const titleRaw = (item.name || item.title || "").trim();
+    const titleKey = titleRaw.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+    if (idKey && seenIds.has(idKey)) continue;
+    if (slugKey && seenSlugs.has(slugKey)) continue;
+    if (titleKey && seenTitles.has(titleKey)) continue;
+
+    if (idKey) seenIds.add(idKey);
+    if (slugKey) seenSlugs.add(slugKey);
+    if (titleKey) seenTitles.add(titleKey);
+    unique.push(item);
+  }
+
+  return unique;
 }
 
 export const db = {
@@ -493,6 +530,7 @@ export const db = {
 
   // Projects CRUD (Firestore collection: 'projects' with graceful fallback)
   getProjects: async (): Promise<Project[]> => {
+    let rawProjects: Project[] = [];
     if (isFirebaseConfigured && firestore) {
       try {
         const snap = await getDocs(collection(firestore, 'projects'));
@@ -500,24 +538,29 @@ export const db = {
           const items: Project[] = [];
           snap.forEach(d => items.push(d.data() as Project));
           items.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-          getDatabase().projects = items;
-          return items;
+          rawProjects = items;
         } else {
           // Graceful fallback to initial projects and auto-seed so the site is never blank
           for (const p of initialProjects) {
             await setDoc(doc(firestore, 'projects', p.id), sanitizeForFirestore(p));
           }
-          getDatabase().projects = initialProjects;
-          return initialProjects;
+          rawProjects = initialProjects;
         }
       } catch (err) {
         console.warn('Firestore getProjects warning (using cache):', err);
+        rawProjects = getDatabase().projects;
       }
+    } else {
+      rawProjects = getDatabase().projects;
     }
-    return getDatabase().projects;
+
+    const uniqueProjects = deduplicateProjectsList(rawProjects && rawProjects.length > 0 ? rawProjects : initialProjects);
+    getDatabase().projects = uniqueProjects;
+    return uniqueProjects;
   },
 
   getProjectById: async (id: string): Promise<Project | undefined> => {
+    const cleanId = (id || '').trim().toLowerCase();
     if (isFirebaseConfigured && firestore) {
       try {
         const snap = await getDoc(doc(firestore, 'projects', id));
@@ -528,7 +571,13 @@ export const db = {
         console.warn('Firestore getProjectById warning:', err);
       }
     }
-    return getDatabase().projects.find(p => p.id === id || p.projectId === id || p.slug === id);
+    const currentList = getDatabase().projects.length > 0 ? getDatabase().projects : initialProjects;
+    return currentList.find(p => 
+      p.id?.toLowerCase() === cleanId || 
+      p.projectId?.toLowerCase() === cleanId || 
+      p.slug?.toLowerCase() === cleanId ||
+      p.name?.toLowerCase().replace(/[^a-z0-9]/g, '') === cleanId.replace(/[^a-z0-9]/g, '')
+    );
   },
 
   getProjectsByClientId: async (clientId: string): Promise<Project[]> => {
@@ -805,6 +854,8 @@ export const db = {
       to: newInvoice.clientEmail,
       subject: `Invoice ${newInvoice.invoiceNumber} from Gen-M Tech`,
       template: 'invoice_generated',
+      status: 'delivered',
+      body: `Hi ${newInvoice.clientName || 'Client'},\n\nInvoice ${newInvoice.invoiceNumber} for project "${newInvoice.projectName}" has been created for amount ₹${(Number(newInvoice.total) || 0).toLocaleString('en-IN')}.\n\nDue Date: ${newInvoice.dueDate}\n\nPlease visit the client portal or payment gateway to complete the transaction.\n\nBest regards,\nGen-M Tech Accounts & Finance`,
       data: { invoiceNumber: newInvoice.invoiceNumber, total: newInvoice.total }
     });
 
@@ -890,7 +941,7 @@ export const db = {
     invoiceId: string;
     amount: number;
     currency: string;
-    gateway: 'razorpay' | 'stripe' | 'bank_transfer';
+    gateway: 'upi' | 'bank_transfer' | 'direct' | 'stripe';
     method: 'card' | 'upi' | 'netbanking' | 'wire';
     transactionRef: string;
     metadata?: Record<string, any>;
@@ -1270,27 +1321,73 @@ export const db = {
         const snap = await getDoc(doc(firestore, 'content', 'services'));
         if (snap.exists()) {
           const data = snap.data();
-          if (data && Array.isArray(data.items)) {
-            getDatabase().services = data.items;
-            return data.items;
+          if (data && Array.isArray(data.items) && data.items.length > 0) {
+            const normalized = data.items.map((s: ServiceItem) => {
+              const img = s.coverImage || s.image || getFallbackServiceImage(s.title);
+              return {
+                ...s,
+                coverImage: img,
+                image: img,
+              };
+            });
+            getDatabase().services = normalized;
+            return normalized;
           }
         }
       } catch (err) {
         console.warn('Firestore getServices warning:', err);
       }
     }
-    return getDatabase().services;
+    const current = getDatabase().services;
+    const normalized = (current && current.length > 0 ? current : initialServices).map(s => {
+      const img = s.coverImage || s.image || getFallbackServiceImage(s.title);
+      return {
+        ...s,
+        coverImage: img,
+        image: img,
+      };
+    });
+    getDatabase().services = normalized;
+    return normalized;
   },
 
-  updateServices: async (services: ServiceItem[]) => {
+  updateServices: async (services: ServiceItem[]): Promise<ServiceItem[]> => {
+    const normalized = services.map((s, idx) => {
+      const img = s.coverImage || s.image || getFallbackServiceImage(s.title);
+      return {
+        ...s,
+        id: s.id || `srv-${Date.now()}-${idx}`,
+        title: s.title || 'UNTITLED SERVICE',
+        description: s.description || '',
+        coverImage: img,
+        image: img,
+      };
+    });
+
     if (isFirebaseConfigured && firestore) {
       try {
-        await setDoc(doc(firestore, 'content', 'services'), { items: services });
+        await setDoc(doc(firestore, 'content', 'services'), { 
+          items: normalized.map(s => sanitizeForFirestore(s)),
+          updatedAt: new Date().toISOString()
+        });
       } catch (err) {
         console.warn('Firestore updateServices warning:', err);
       }
     }
-    getDatabase().services = services;
+    const dbInst = getDatabase();
+    dbInst.services = normalized;
+    saveStoreToDisk(
+      dbInst.bookings, 
+      dbInst.enquiries, 
+      dbInst.expenses, 
+      dbInst.payments, 
+      dbInst.invoices, 
+      dbInst.projects, 
+      dbInst.team, 
+      dbInst.promo, 
+      normalized
+    );
+    return normalized;
   },
 
   getTestimonials: async (): Promise<Testimonial[]> => getDatabase().testimonials,
@@ -1464,8 +1561,34 @@ export const db = {
       try {
         const snap = await getDocs(collection(firestore, 'team'));
         if (!snap.empty) {
-          const firestoreMembers: TeamMember[] = snap.docs.map(d => ({ ...d.data(), id: d.id } as TeamMember));
+          const firestoreMembers: TeamMember[] = snap.docs.map(d => {
+            const data = d.data() as Partial<TeamMember>;
+            let img = data.image || '/team/mathew.jpg';
+            // If legacy broken /uploads/ path that does not exist on disk, fall back to valid team photo
+            if (img.startsWith('/uploads/')) {
+              const fullDiskPath = path.join(process.cwd(), 'public', img.replace(/^\//, ''));
+              if (!fs.existsSync(fullDiskPath)) {
+                if (data.name?.toLowerCase().includes('sidhu') || data.role?.toLowerCase().includes('backend')) {
+                  img = '/team/sidhu.jpg';
+                } else if (data.role?.toLowerCase().includes('ai')) {
+                  img = '/team/mathew-ai.jpg';
+                } else {
+                  img = '/team/mathew.jpg';
+                }
+              }
+            }
+            return {
+              ...data,
+              id: d.id,
+              image: img,
+            } as TeamMember;
+          });
           dbInstance.team = firestoreMembers;
+        } else {
+          // Seed Firestore if collection is empty
+          for (const member of (dbInstance.team || initialTeam)) {
+            await setDoc(doc(firestore, 'team', member.id), sanitizeForFirestore(member));
+          }
         }
       } catch (err) {
         console.warn('Firestore getTeamMembers error:', err);

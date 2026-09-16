@@ -5,7 +5,6 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { 
-  Sparkles, 
   Check, 
   ArrowRight, 
   ArrowLeft, 
@@ -88,10 +87,6 @@ export default function StartProjectPage() {
       <main className="flex-grow w-full relative z-10 pt-32 pb-24 px-6 md:px-12 max-w-4xl mx-auto flex flex-col gap-10">
         {/* Top Indicator */}
         <div className="flex flex-col items-center text-center pt-8">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-900 border border-zinc-800 text-xs font-semibold uppercase tracking-wider text-yellow-400 mb-4">
-            <Sparkles className="w-3.5 h-3.5 text-yellow-400" />
-            Start a Project
-          </div>
           <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white mb-3">
             Start Your Own <span className="text-yellow-400">Identity</span>
           </h1>

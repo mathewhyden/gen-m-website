@@ -1,8 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Link from "next/link";
-import Image from "next/image";
 import { 
   FolderGit2, 
   Plus, 
@@ -15,9 +13,16 @@ import {
   X,
   Sparkles,
   AlertCircle,
-  Loader2
+  Loader2,
+  Mail,
+  IndianRupee,
+  Calendar,
+  Check,
+  Copy,
+  ExternalLink
 } from "lucide-react";
 import { Project, ProjectStatus } from "@/lib/types";
+import { compressImageToBase64 } from "@/lib/image-compression";
 
 export default function AdminProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -25,29 +30,46 @@ export default function AdminProjectsPage() {
   const [search, setSearch] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [notification, setNotification] = useState("");
-  const [generatingInvoiceId, setGeneratingInvoiceId] = useState<string | null>(null);
   const [uploadingCover, setUploadingCover] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState("");
+
+  // Review Modal State
+  const [reviewModalProject, setReviewModalProject] = useState<Project | null>(null);
+  const [reviewEmail, setReviewEmail] = useState("");
+  const [reviewNote, setReviewNote] = useState("");
+  const [sendingReview, setSendingReview] = useState(false);
+  const [reviewSuccessInfo, setReviewSuccessInfo] = useState<{ email: string; reviewUrl: string; mailtoUrl: string } | null>(null);
+  const [copiedLink, setCopiedLink] = useState(false);
+
+  // Bill Invoice Modal State (Allows Admin to freely specify & change the invoice amount)
+  const [invoiceModalProject, setInvoiceModalProject] = useState<Project | null>(null);
+  const [invoiceAmount, setInvoiceAmount] = useState<number | string>("");
+  const [invoiceDescription, setInvoiceDescription] = useState("");
+  const [invoiceEmail, setInvoiceEmail] = useState("");
+  const [invoiceDueDate, setInvoiceDueDate] = useState("");
+  const [billingInvoice, setBillingInvoice] = useState(false);
 
   const handleUploadCover = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     setUploadingCover(true);
+    setUploadStatus("Processing...");
     try {
-      const body = new FormData();
-      body.append("file", file);
-      body.append("folder", "projects");
-
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body,
+      // 1. Instant client-side resize & base64 conversion (0ms network overhead)
+      const base64Data = await compressImageToBase64(file, {
+        maxWidth: 800,
+        maxHeight: 800,
+        quality: 0.8,
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Upload failed");
 
-      setNewProject((prev) => ({ ...prev, coverImage: data.url }));
+      // 2. Reactive preview & state update immediately
+      setNewProject((prev) => ({ ...prev, coverImage: base64Data }));
+      setUploadStatus("Ready");
+      setNotification("Cover image converted to instant Base64!");
     } catch (err: any) {
-      alert(err.message || "Failed to upload image");
+      alert(err.message || "Failed to process image");
+      setUploadStatus("");
     } finally {
       setUploadingCover(false);
     }
@@ -74,7 +96,21 @@ export default function AdminProjectsPage() {
     fetch("/api/projects")
       .then(res => res.json())
       .then(data => {
-        if (data.projects) setProjects(data.projects);
+        if (data.projects && Array.isArray(data.projects)) {
+          const seenIds = new Set<string>();
+          const seenTitles = new Set<string>();
+          const unique: Project[] = [];
+          for (const p of data.projects) {
+            const idKey = (p.id || "").trim().toLowerCase();
+            const titleKey = (p.name || "").trim().toLowerCase().replace(/[^a-z0-9]/g, "");
+            if (idKey && seenIds.has(idKey)) continue;
+            if (titleKey && seenTitles.has(titleKey)) continue;
+            if (idKey) seenIds.add(idKey);
+            if (titleKey) seenTitles.add(titleKey);
+            unique.push(p);
+          }
+          setProjects(unique);
+        }
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -124,56 +160,115 @@ export default function AdminProjectsPage() {
     }
   };
 
-  const handleSendVerification = async (id: string) => {
+  // Open Review modal with prefilled client email
+  const openReviewModal = (project: Project) => {
+    setReviewModalProject(project);
+    setReviewEmail(project.clientEmail || "");
+    setReviewNote("");
+    setReviewSuccessInfo(null);
+    setCopiedLink(false);
+  };
+
+  // Submit Review Dispatch to Client Email
+  const handleSendReviewSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!reviewModalProject) return;
+
+    const targetEmail = reviewEmail.trim();
+    if (!targetEmail || !targetEmail.includes("@")) {
+      alert("Please enter a valid client email address to send the review invite.");
+      return;
+    }
+
+    setSendingReview(true);
     try {
-      const res = await fetch(`/api/projects/${id}/verify`, {
+      const res = await fetch(`/api/projects/${reviewModalProject.id}/review`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "request_review" }),
+        body: JSON.stringify({
+          clientEmail: targetEmail,
+          note: reviewNote.trim(),
+        }),
       });
       const data = await res.json();
-      if (res.ok) {
-        setNotification(`Verification review invite dispatched to client!`);
-        fetchProjects();
-      }
-    } catch (err) {
-      console.error(err);
+      if (!res.ok) throw new Error(data.error || "Failed to dispatch review invitation");
+
+      setNotification(`✓ Verification review invite successfully sent to ${targetEmail}! Client notified.`);
+      setReviewSuccessInfo({
+        email: targetEmail,
+        reviewUrl: data.reviewUrl || `/work/${reviewModalProject.slug || reviewModalProject.id}`,
+        mailtoUrl: data.mailtoUrl || `mailto:${targetEmail}`,
+      });
+      fetchProjects();
+    } catch (err: any) {
+      alert(err.message || "Failed to send review invite");
+    } finally {
+      setSendingReview(false);
     }
   };
 
-  const handleGenerateInvoice = async (project: Project) => {
-    if (generatingInvoiceId) return;
-    setGeneratingInvoiceId(project.id);
+  // Open Invoice modal with prefilled customizable amount
+  const openInvoiceModal = (project: Project) => {
+    setInvoiceModalProject(project);
+    const numericBudget = parseInt((project.budget || `₹${project.amount || 75000}`).replace(/[^0-9]/g, '')) || project.amount || 75000;
+    setInvoiceAmount(numericBudget);
+    setInvoiceEmail(project.clientEmail || "");
+    setInvoiceDescription(`${project.name} — Full-Stack Deliverable Milestone`);
+    setInvoiceDueDate(new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0]);
+  };
+
+  // Submit Invoice Generation with the user-specified custom amount
+  const handleCreateInvoiceSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!invoiceModalProject) return;
+
+    const numAmount = Number(invoiceAmount);
+    if (!numAmount || numAmount <= 0) {
+      alert("Please enter a valid invoice amount greater than 0.");
+      return;
+    }
+
+    const emailToBill = invoiceEmail.trim();
+    if (!emailToBill || !emailToBill.includes("@")) {
+      alert("Please enter a valid client billing email address.");
+      return;
+    }
+
+    setBillingInvoice(true);
     try {
       const res = await fetch("/api/invoices", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          projectId: project.id,
-          projectName: project.name,
-          clientName: project.clientName,
-          clientEmail: project.clientEmail,
-          clientCompany: project.clientCompany,
+          projectId: invoiceModalProject.id,
+          projectName: invoiceModalProject.name,
+          clientName: invoiceModalProject.clientName || invoiceModalProject.clientCompany || "Valued Client",
+          clientEmail: emailToBill,
+          clientCompany: invoiceModalProject.clientCompany || "",
           items: [
             {
-              description: `${project.name} — Full-Stack Deliverable Milestone`,
+              description: invoiceDescription.trim() || `${invoiceModalProject.name} — Deliverable Milestone`,
               quantity: 1,
-              unitPrice: parseInt((project.budget || `₹${project.amount || 75000}`).replace(/[^0-9]/g, '')) || 75000,
-              amount: parseInt((project.budget || `₹${project.amount || 75000}`).replace(/[^0-9]/g, '')) || 75000,
+              unitPrice: numAmount,
+              amount: numAmount,
             }
           ],
-          dueDate: new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0],
+          subtotal: numAmount,
+          total: numAmount,
+          dueDate: invoiceDueDate || new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0],
         }),
       });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to generate invoice");
 
-      setNotification(`Invoice ${data.invoice.invoiceNumber} generated!`);
+      setNotification(`✓ Invoice ${data.invoice.invoiceNumber} for ₹${numAmount.toLocaleString('en-IN')} generated and dispatched to ${emailToBill}!`);
+      setInvoiceModalProject(null);
+      fetchProjects();
     } catch (err: any) {
       alert(err.message || "Failed to create invoice");
     } finally {
-      setGeneratingInvoiceId(null);
+      setBillingInvoice(false);
     }
   };
 
@@ -247,8 +342,15 @@ export default function AdminProjectsPage() {
             {filtered.map((proj) => (
               <div key={proj.id} className="p-6 flex flex-col lg:flex-row lg:items-center justify-between gap-6 hover:bg-zinc-900/30 transition-colors">
                 <div className="flex items-start gap-4">
-                  <div className="relative w-20 h-14 rounded-lg overflow-hidden bg-zinc-900 flex-shrink-0 border border-zinc-800 hidden sm:block">
-                    <Image src={proj.coverImage} alt={proj.name} fill className="object-cover" />
+                  <div className="relative w-20 h-14 rounded-lg overflow-hidden bg-zinc-900 flex-shrink-0 border border-zinc-800 hidden sm:flex items-center justify-center">
+                    <img
+                      src={proj.coverImage || "/graphic-design/graphic-work-1-1.jpg"}
+                      alt={proj.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = "/graphic-design/graphic-work-1-1.jpg";
+                      }}
+                    />
                   </div>
                   <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2">
@@ -282,29 +384,24 @@ export default function AdminProjectsPage() {
                     <option value="COMPLETED">COMPLETED</option>
                   </select>
 
-                  {/* Send for Verification */}
+                  {/* Send for Review / Verification */}
                   <button
-                    onClick={() => handleSendVerification(proj.id)}
-                    className="px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs font-mono text-zinc-300 hover:text-yellow-400 hover:border-yellow-400/60 transition-colors flex items-center gap-1 cursor-pointer"
-                    title="Notify client to review staged deliverable"
+                    onClick={() => openReviewModal(proj)}
+                    className="px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs font-mono text-zinc-300 hover:text-yellow-400 hover:border-yellow-400/60 transition-colors flex items-center gap-1.5 cursor-pointer shadow-sm"
+                    title={proj.clientEmail ? `Send review invitation to ${proj.clientEmail}` : "Enter client email & send review invite"}
                   >
-                    <Send className="w-3 h-3" />
+                    <Send className="w-3 h-3 text-yellow-400" />
                     <span>Send for Review</span>
                   </button>
 
-                  {/* Generate Invoice */}
+                  {/* Generate / Bill Invoice */}
                   <button
-                    disabled={generatingInvoiceId === proj.id}
-                    onClick={() => handleGenerateInvoice(proj)}
-                    className="px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs font-mono text-zinc-300 hover:text-emerald-400 hover:border-emerald-500/60 transition-colors flex items-center gap-1 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                    title="Generate billing invoice"
+                    onClick={() => openInvoiceModal(proj)}
+                    className="px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs font-mono text-zinc-300 hover:text-emerald-400 hover:border-emerald-500/60 transition-colors flex items-center gap-1.5 cursor-pointer shadow-sm"
+                    title="Specify invoice amount & generate bill invoice"
                   >
-                    {generatingInvoiceId === proj.id ? (
-                      <Loader2 className="w-3 h-3 animate-spin text-emerald-400" />
-                    ) : (
-                      <Receipt className="w-3 h-3" />
-                    )}
-                    <span>{generatingInvoiceId === proj.id ? "Billing..." : "Bill Invoice"}</span>
+                    <Receipt className="w-3 h-3 text-emerald-400" />
+                    <span>Bill Invoice</span>
                   </button>
 
                   {/* Delete */}
@@ -436,20 +533,23 @@ export default function AdminProjectsPage() {
 
               {/* Cover Image Upload */}
               <div className="flex flex-col gap-1.5">
-                <label className="text-[11px] font-mono text-zinc-400 uppercase">Cover Image (Firebase Storage Upload OR URL)</label>
+                <label className="text-[11px] font-mono text-zinc-400 uppercase">Cover Image (Instant Base64 Upload OR URL)</label>
                 <div className="flex items-center gap-3 bg-zinc-900/60 border border-zinc-800 p-2.5 rounded-xl">
-                  <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-zinc-900 border border-zinc-700 shrink-0">
-                    <Image
+                  <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-zinc-900 border border-zinc-700 shrink-0 flex items-center justify-center">
+                    <img
                       src={newProject.coverImage || "/graphic-design/graphic-work-1-1.jpg"}
                       alt="Cover Preview"
-                      fill
-                      className="object-cover"
+                      className="w-full h-full object-cover rounded-lg"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = "/graphic-design/graphic-work-1-1.jpg";
+                      }}
                     />
                   </div>
                   <div className="flex-1 flex flex-col gap-1.5">
                     <div className="flex items-center gap-2">
-                      <label className="px-2.5 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white text-[10px] font-mono cursor-pointer border border-zinc-700 transition-colors">
-                        {uploadingCover ? "Uploading..." : "Upload File"}
+                      <label className="px-2.5 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-white text-[10px] font-mono cursor-pointer border border-zinc-700 transition-colors flex items-center gap-1.5">
+                        <Plus className="w-3 h-3 text-yellow-400" />
+                        {uploadingCover ? "Processing..." : "Upload Image"}
                         <input
                           type="file"
                           accept="image/*"
@@ -459,6 +559,11 @@ export default function AdminProjectsPage() {
                         />
                       </label>
                       {uploadingCover && <Loader2 className="w-3 h-3 animate-spin text-yellow-400" />}
+                      {uploadStatus && (
+                        <span className="text-[10px] font-mono text-yellow-400/90 truncate max-w-[160px]">
+                          {uploadStatus}
+                        </span>
+                      )}
                     </div>
                     <input
                       type="text"
@@ -495,6 +600,318 @@ export default function AdminProjectsPage() {
                   className="px-6 py-2.5 rounded-full bg-yellow-400 text-black font-bold text-xs uppercase tracking-wider hover:bg-yellow-300 transition-colors flex items-center gap-1.5 cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5 stroke-[3]" /> Add Project
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Send Review Modal */}
+      {reviewModalProject && (
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <div className="max-w-md w-full bg-zinc-950 border border-zinc-800 rounded-3xl p-6 sm:p-7 shadow-2xl flex flex-col gap-5 my-8">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-yellow-400/10 border border-yellow-400/25 flex items-center justify-center text-yellow-400 shrink-0">
+                  <Send className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-white tracking-tight">Send for Client Review</h3>
+                  <p className="text-xs text-zinc-400 font-mono">Dispatches verification email to client</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setReviewModalProject(null)} 
+                className="text-zinc-500 hover:text-white p-1 rounded-lg hover:bg-zinc-900 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Project Summary Box */}
+            <div className="p-3.5 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 flex flex-col gap-1.5 text-xs">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-white text-sm">{reviewModalProject.name}</span>
+                <span className="font-mono text-[10px] text-zinc-500">{reviewModalProject.projectId}</span>
+              </div>
+              <span className="text-zinc-400">
+                Client: <strong className="text-zinc-200">{reviewModalProject.clientCompany || reviewModalProject.clientName}</strong>
+              </span>
+              <div className="flex items-center gap-2 mt-1 text-[11px] font-mono text-yellow-400/90 bg-yellow-400/5 px-2.5 py-1 rounded-lg border border-yellow-400/10">
+                <span>Staging Portal:</span>
+                <span className="text-zinc-300 truncate">/work/{reviewModalProject.slug || reviewModalProject.id}</span>
+              </div>
+            </div>
+
+            {reviewSuccessInfo ? (
+              <div className="flex flex-col gap-4 py-2">
+                <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex flex-col gap-2">
+                  <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>Review Invitation Dispatched & Logged</span>
+                  </div>
+                  <p className="text-xs text-zinc-300">
+                    The review notice and project portal instructions have been recorded and emailed to:
+                  </p>
+                  <span className="font-mono text-xs text-yellow-400 bg-black/40 px-2.5 py-1 rounded border border-yellow-400/20 break-all">
+                    {reviewSuccessInfo.email}
+                  </span>
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[11px] font-mono text-zinc-400 uppercase">
+                    Client Verification Portal URL
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      readOnly
+                      value={reviewSuccessInfo.reviewUrl}
+                      className="flex-1 bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-xs font-mono text-zinc-300 focus:outline-none"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigator.clipboard.writeText(reviewSuccessInfo.reviewUrl);
+                        setCopiedLink(true);
+                        setTimeout(() => setCopiedLink(false), 2000);
+                      }}
+                      className="px-3 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-xs font-mono text-zinc-300 hover:text-yellow-400 hover:border-yellow-400 transition-colors flex items-center gap-1.5 cursor-pointer"
+                    >
+                      {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                      <span>{copiedLink ? "Copied" : "Copy"}</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-center gap-3 pt-3">
+                  <a
+                    href={reviewSuccessInfo.mailtoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full sm:flex-1 py-2.5 px-4 rounded-full bg-zinc-900 border border-zinc-800 hover:border-yellow-400 text-zinc-200 hover:text-yellow-400 text-xs font-mono font-bold flex items-center justify-center gap-2 transition-all cursor-pointer"
+                  >
+                    <Mail className="w-3.5 h-3.5" />
+                    <span>Open in Email Client</span>
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => setReviewModalProject(null)}
+                    className="w-full sm:w-auto px-6 py-2.5 rounded-full bg-yellow-400 text-black font-bold text-xs uppercase tracking-wider hover:bg-yellow-300 transition-colors cursor-pointer"
+                  >
+                    Done
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={handleSendReviewSubmit} className="flex flex-col gap-4">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[11px] font-mono text-zinc-400 uppercase flex items-center justify-between">
+                    <span>Client Email Address *</span>
+                    <span className="text-yellow-400 lowercase text-[10px]">Will dispatch invite here</span>
+                  </label>
+                  <div className="relative">
+                    <Mail className="w-4 h-4 text-zinc-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                    <input
+                      type="email"
+                      required
+                      placeholder="client@company.com"
+                      value={reviewEmail}
+                      onChange={(e) => setReviewEmail(e.target.value)}
+                      className="w-full bg-zinc-900 border border-zinc-800 rounded-xl py-2.5 pl-10 pr-3.5 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-yellow-400"
+                    />
+                  </div>
+                  {!reviewEmail && (
+                    <span className="text-[10px] font-mono text-red-400">Please provide a valid client email</span>
+                  )}
+                </div>
+
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-[11px] font-mono text-zinc-400 uppercase">
+                    Custom Admin Note / Message (Optional)
+                  </label>
+                  <textarea
+                    rows={3}
+                    placeholder="e.g. Hi team, please verify the staging deployment and submit your feedback."
+                    value={reviewNote}
+                    onChange={(e) => setReviewNote(e.target.value)}
+                    className="bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-yellow-400 resize-none font-sans"
+                  />
+                </div>
+
+                <div className="flex items-center justify-end gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setReviewModalProject(null)}
+                    className="px-4 py-2 rounded-full text-xs font-mono text-zinc-400 hover:text-white cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={sendingReview}
+                    className="px-5 py-2.5 rounded-full bg-yellow-400 text-black font-bold text-xs uppercase tracking-wider hover:bg-yellow-300 transition-colors flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                  >
+                    {sendingReview ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        <span>Sending Email...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-3.5 h-3.5" />
+                        <span>Send Review Invite</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Bill Invoice Modal (Allows Admin to freely set & change amount) */}
+      {invoiceModalProject && (
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+          <div className="max-w-md w-full bg-zinc-950 border border-zinc-800 rounded-3xl p-6 sm:p-7 shadow-2xl flex flex-col gap-5 my-8">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center text-emerald-400 shrink-0">
+                  <Receipt className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-white tracking-tight">Generate & Bill Invoice</h3>
+                  <p className="text-xs text-zinc-400 font-mono">Set custom invoice amount for project</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setInvoiceModalProject(null)} 
+                className="text-zinc-500 hover:text-white p-1 rounded-lg hover:bg-zinc-900 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Project Details Pill */}
+            <div className="p-3.5 rounded-2xl bg-zinc-900/60 border border-zinc-800/80 flex flex-col gap-1 text-xs">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-white">{invoiceModalProject.name}</span>
+                <span className="font-mono text-[10px] text-zinc-500">{invoiceModalProject.projectId}</span>
+              </div>
+              <span className="text-zinc-400">
+                Client: <strong className="text-zinc-200">{invoiceModalProject.clientCompany || invoiceModalProject.clientName}</strong>
+              </span>
+              <span className="text-[11px] font-mono text-zinc-500">
+                Budget Allocation: {invoiceModalProject.budget || `₹${(invoiceModalProject.amount || 0).toLocaleString('en-IN')}`}
+              </span>
+            </div>
+
+            <form onSubmit={handleCreateInvoiceSubmit} className="flex flex-col gap-4">
+              {/* Customizable Amount Input */}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[11px] font-mono text-emerald-400 uppercase font-bold flex items-center justify-between">
+                  <span>Invoice Amount (₹) *</span>
+                  <span className="text-zinc-400 text-[10px] lowercase font-normal">Change amount freely</span>
+                </label>
+                <div className="relative">
+                  <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-emerald-400 font-bold text-sm">
+                    ₹
+                  </div>
+                  <input
+                    type="number"
+                    min="1"
+                    step="1"
+                    required
+                    placeholder="75000"
+                    value={invoiceAmount}
+                    onChange={(e) => setInvoiceAmount(e.target.value)}
+                    className="w-full bg-zinc-900 border border-emerald-500/40 rounded-xl py-2.5 pl-9 pr-4 text-base font-bold text-white placeholder:text-zinc-600 focus:outline-none focus:border-emerald-400"
+                  />
+                </div>
+                <div className="flex items-center justify-between text-[11px] font-mono text-zinc-400 px-1">
+                  <span>Formatted Total:</span>
+                  <span className="text-emerald-400 font-bold">
+                    ₹{Number(invoiceAmount || 0).toLocaleString('en-IN')}
+                  </span>
+                </div>
+              </div>
+
+              {/* Client Email for Invoice */}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[11px] font-mono text-zinc-400 uppercase">
+                  Client Billing Email *
+                </label>
+                <div className="relative">
+                  <Mail className="w-4 h-4 text-zinc-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="email"
+                    required
+                    placeholder="client@company.com"
+                    value={invoiceEmail}
+                    onChange={(e) => setInvoiceEmail(e.target.value)}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl py-2 pl-10 pr-3.5 text-xs text-white placeholder:text-zinc-600 focus:outline-none focus:border-yellow-400"
+                  />
+                </div>
+              </div>
+
+              {/* Milestone Description */}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[11px] font-mono text-zinc-400 uppercase">
+                  Milestone Deliverable Description
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Deliverable Milestone & Development"
+                  value={invoiceDescription}
+                  onChange={(e) => setInvoiceDescription(e.target.value)}
+                  className="bg-zinc-900 border border-zinc-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-yellow-400 font-sans"
+                />
+              </div>
+
+              {/* Due Date */}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[11px] font-mono text-zinc-400 uppercase">
+                  Payment Due Date
+                </label>
+                <div className="relative">
+                  <Calendar className="w-4 h-4 text-zinc-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="date"
+                    required
+                    value={invoiceDueDate}
+                    onChange={(e) => setInvoiceDueDate(e.target.value)}
+                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl py-2 pl-10 pr-3.5 text-xs text-white focus:outline-none focus:border-yellow-400 font-mono"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setInvoiceModalProject(null)}
+                  className="px-4 py-2 rounded-full text-xs font-mono text-zinc-400 hover:text-white cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={billingInvoice}
+                  className="px-5 py-2.5 rounded-full bg-emerald-500 text-black font-bold text-xs uppercase tracking-wider hover:bg-emerald-400 transition-colors flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                >
+                  {billingInvoice ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Generating Invoice...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Receipt className="w-3.5 h-3.5" />
+                      <span>Issue Invoice (₹{Number(invoiceAmount || 0).toLocaleString('en-IN')})</span>
+                    </>
+                  )}
                 </button>
               </div>
             </form>

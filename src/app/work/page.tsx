@@ -1,19 +1,19 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import {
   MaskWipeText,
-  LetterSpacingExpand,
   TextShimmer,
   WordBlurIn,
 } from "@/components/TextAnimations";
 import ResponsiveExpandCards, {
   defaultWebExpandCards,
   defaultGraphicExpandCards,
+  ExpandCardItem,
 } from "@/components/ResponsiveExpandCards";
 import { 
   Globe, 
@@ -22,10 +22,147 @@ import {
   Layers,
   X,
 } from "lucide-react";
+import { Project } from "@/lib/types";
 
 export default function OurWorkPage() {
   const [selectedTab, setSelectedTab] = useState<"all" | "web" | "graphic">("all");
   const [selectedGraphicImage, setSelectedGraphicImage] = useState<string | null>(null);
+  const [webCards, setWebCards] = useState<ExpandCardItem[]>(defaultWebExpandCards);
+  const [graphicCards, setGraphicCards] = useState<ExpandCardItem[]>(defaultGraphicExpandCards);
+
+  useEffect(() => {
+    fetch("/api/projects")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.projects && Array.isArray(data.projects)) {
+          const projs: Project[] = data.projects;
+
+          const isGraphic = (p: Project) => {
+            const cat = (p.category || "").toLowerCase();
+            const srv = (p.serviceName || "").toLowerCase();
+            return (
+              cat.includes("graphic") ||
+              srv.includes("graphic") ||
+              cat.includes("design") ||
+              srv.includes("design") ||
+              cat.includes("branding") ||
+              cat.includes("visual")
+            );
+          };
+
+          const isWeb = (p: Project) => {
+            const cat = (p.category || "").toLowerCase();
+            const srv = (p.serviceName || "").toLowerCase();
+            return (
+              cat.includes("web") ||
+              srv.includes("web") ||
+              cat.includes("software") ||
+              srv.includes("app") ||
+              cat.includes("app")
+            );
+          };
+
+          // Strictly deduplicate ExpandCardItem list by ID, Title, and Slug
+          const deduplicateCards = (items: ExpandCardItem[]): ExpandCardItem[] => {
+            const seen = new Set<string>();
+            const unique: ExpandCardItem[] = [];
+            for (const it of items) {
+              if (!it) continue;
+              const cleanId = (it.id || "").trim().toLowerCase();
+              const cleanTitle = (it.title || "").trim().toLowerCase().replace(/[^a-z0-9]/g, "");
+              const cleanSlug = (it.slug || "").trim().toLowerCase();
+
+              if (cleanId && seen.has(`id:${cleanId}`)) continue;
+              if (cleanTitle && seen.has(`title:${cleanTitle}`)) continue;
+              if (cleanSlug && seen.has(`slug:${cleanSlug}`)) continue;
+
+              if (cleanId) seen.add(`id:${cleanId}`);
+              if (cleanTitle) seen.add(`title:${cleanTitle}`);
+              if (cleanSlug) seen.add(`slug:${cleanSlug}`);
+
+              unique.push({
+                ...it,
+                num: String(unique.length + 1).padStart(2, "0"),
+              });
+            }
+            return unique;
+          };
+
+          const customGraphicProjects = projs.filter(isGraphic);
+          const dynamicGraphicItems: ExpandCardItem[] = customGraphicProjects.map(
+            (p, idx) => ({
+              id: p.id || `custom-graphic-${idx}`,
+              num: String(idx + 1).padStart(2, "0"),
+              title: p.name,
+              subtitle: p.clientCompany || p.clientName || "Graphic Design",
+              category: p.category || p.serviceName || "Graphic Design",
+              image: p.coverImage || "/graphic-design/graphic-work-1-1.jpg",
+              description:
+                p.description ||
+                p.longDescription ||
+                "Creative commercial graphic design, branding assets, and high-resolution visuals.",
+              technologies:
+                p.technologies && p.technologies.length > 0
+                  ? p.technologies
+                  : ["Graphic Design", "Visual Identity", "Commercial Print"],
+              liveUrl: p.liveUrl || undefined,
+              slug: p.slug || p.id,
+              badge:
+                p.status === "COMPLETED"
+                  ? "Completed"
+                  : p.status === "CONFIRMED"
+                  ? "Commissioned"
+                  : "Showcase",
+              actionLabel: p.liveUrl ? "Visit Live Site" : "View High-Res Design",
+            })
+          );
+
+          const combinedGraphic = deduplicateCards([
+            ...dynamicGraphicItems,
+            ...defaultGraphicExpandCards,
+          ]);
+          setGraphicCards(combinedGraphic);
+
+          const customWebProjects = projs.filter(isWeb);
+          const dynamicWebItems: ExpandCardItem[] = customWebProjects.map(
+            (p, idx) => ({
+              id: p.id || `custom-web-${idx}`,
+              num: String(idx + 1).padStart(2, "0"),
+              title: p.name,
+              subtitle: p.clientCompany || p.clientName || "Web Platform",
+              category: p.category || p.serviceName || "Web Development",
+              image: p.coverImage || "/websites/hebe-art-studio.jpg",
+              description:
+                p.description ||
+                p.longDescription ||
+                "Responsive modern digital platform built for commercial scale and performance.",
+              technologies:
+                p.technologies && p.technologies.length > 0
+                  ? p.technologies
+                  : ["Next.js", "TypeScript", "Tailwind CSS"],
+              liveUrl: p.liveUrl || undefined,
+              slug: p.slug || p.id,
+              badge:
+                p.status === "COMPLETED"
+                  ? "Live Platform"
+                  : p.status === "CONFIRMED"
+                  ? "In Production"
+                  : "Client Platform",
+              actionLabel: "Visit Live Website",
+            })
+          );
+
+          const combinedWeb = deduplicateCards([
+            ...dynamicWebItems,
+            ...defaultWebExpandCards,
+          ]);
+          setWebCards(combinedWeb);
+        }
+      })
+      .catch((err) => {
+        console.warn("Failed to load projects:", err);
+      });
+  }, []);
 
   return (
     <div className="min-h-screen bg-black text-white selection:bg-yellow-400 selection:text-black">
@@ -34,10 +171,6 @@ export default function OurWorkPage() {
       <main className="max-w-7xl mx-auto px-6 md:px-12 py-24 md:py-32 flex flex-col gap-14 md:gap-16">
         {/* Page Header - Left-Aligned */}
         <section className="flex flex-col items-start max-w-3xl pt-8">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-900 border border-zinc-800 text-xs font-semibold uppercase tracking-wider text-yellow-400 mb-4">
-            <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse" />
-            <LetterSpacingExpand text="Portfolio & Projects" delay={0.1} />
-          </div>
           <h1 className="text-4xl sm:text-6xl font-black tracking-tight uppercase leading-[1.08] mb-4 text-white">
             <MaskWipeText text="Our " delay={0.15} />
             <TextShimmer text="Works" />
@@ -108,8 +241,8 @@ export default function OurWorkPage() {
               </span>
             </div>
 
-            {/* 5-Card Responsive Expandable Web Cards */}
-            <ResponsiveExpandCards cards={defaultWebExpandCards} />
+            {/* Responsive Expandable Web Cards */}
+            <ResponsiveExpandCards cards={webCards} />
           </section>
         )}
 
@@ -131,9 +264,9 @@ export default function OurWorkPage() {
               </span>
             </div>
 
-            {/* 5-Card Responsive Expandable Graphic Design Cards */}
+            {/* Responsive Expandable Graphic Design Cards */}
             <ResponsiveExpandCards
-              cards={defaultGraphicExpandCards}
+              cards={graphicCards}
               onImageZoom={(img) => setSelectedGraphicImage(img)}
             />
           </section>
@@ -169,6 +302,7 @@ export default function OurWorkPage() {
                   alt="High-resolution Graphic Design Showcase"
                   fill
                   sizes="100vw"
+                  unoptimized={selectedGraphicImage?.startsWith("data:") || selectedGraphicImage?.startsWith("http")}
                   className="object-contain"
                 />
               </div>

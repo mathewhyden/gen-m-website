@@ -1,12 +1,11 @@
 "use client";
 
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { MagneticButton } from "./Navbar";
 import { ScrollReveal } from "./ScrollReveal";
 import {
   MaskWipeText,
   TextShimmer,
-  ScrambleDecoder,
   WordBlurIn,
 } from "./TextAnimations";
 
@@ -21,18 +20,8 @@ export default function Hero({
     <section className="relative flex flex-col items-center justify-center bg-black px-6 md:px-12 pt-32 pb-16 md:pt-40 md:pb-24 overflow-hidden">
       {/* Main Container */}
       <div className="relative z-10 max-w-5xl mx-auto text-center flex flex-col items-center">
-        {/* Tagline Badge with Cyber Matrix Decoder */}
-        <ScrollReveal delay={0.05} yOffset={16}>
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-zinc-900 border border-yellow-400/40 mb-8">
-            <Sparkles className="w-4 h-4 text-yellow-400" />
-            <span className="text-xs sm:text-sm font-bold uppercase tracking-widest text-yellow-400">
-              <ScrambleDecoder text="WE BUILD. WE DESIGN. WE INNOVATE." delay={0.1} />
-            </span>
-          </div>
-        </ScrollReveal>
-
         {/* H1 Heading with Kinetic Mask Reveal and Gold Shimmer */}
-        <ScrollReveal delay={0.15} yOffset={24}>
+        <ScrollReveal delay={0.1} yOffset={24}>
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight leading-[1.05] uppercase">
             <MaskWipeText text="Digital Excellence" delay={0.15} className="text-white" /> <br />
             <TextShimmer text="For Next-Gen Brands" />

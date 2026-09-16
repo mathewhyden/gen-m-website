@@ -118,6 +118,7 @@ export default function CaseStudyPage() {
             alt={project.name}
             fill
             className="object-cover"
+            unoptimized
             priority
           />
           {project.liveUrl && (

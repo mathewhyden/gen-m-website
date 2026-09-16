@@ -19,9 +19,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Generate payment order object
-    const orderId = gateway === 'razorpay' 
-      ? `order_rzp_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`
-      : `pi_str_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+    const orderId = `pay_order_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
 
     return NextResponse.json({
       success: true,
@@ -34,7 +32,7 @@ export async function POST(req: NextRequest) {
         clientName: invoice.clientName,
         clientEmail: invoice.clientEmail,
         gateway,
-        key: gateway === 'razorpay' ? 'rzp_test_GenMStudio123' : 'pk_test_GenMStudioStripe123',
+        key: 'direct_secure_channel',
       }
     });
   } catch (error: any) {

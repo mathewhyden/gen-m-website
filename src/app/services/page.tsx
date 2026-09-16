@@ -56,37 +56,23 @@ export default function ServicesPage() {
   const [activeHash, setActiveHash] = useState<string>("");
 
   useEffect(() => {
-    fetch("/api/content")
+    fetch("/api/services")
       .then((res) => res.json())
       .then((data) => {
         if (data.services && data.services.length > 0) {
-          // Normalize titles and remove buzzwords (craft, high roi)
-          const normalized = data.services
-            .filter((s: ServiceItem) => {
-              const lower = s.id.toLowerCase() + " " + s.title.toLowerCase();
-              return !lower.includes("app-dev") && !lower.includes("app dev") && !lower.includes("crm");
-            })
-            .map((s: ServiceItem) => {
-              let badge = (s.badge || "").trim();
-              badge = badge
-                .replace(/creative craft/gi, "Visual Design")
-                .replace(/craft/gi, "Design")
-                .replace(/high roi/gi, "Marketing & Growth")
-                .replace(/core foundation/gi, "Brand Systems")
-                .trim();
-
-              return {
-                ...s,
-                title: s.title.replace(/ & CRM/gi, ""),
-                badge,
-              };
-            });
-          if (normalized.length > 0) {
-            setServices(normalized);
-          }
+          setServices(data.services);
         }
       })
-      .catch(() => {});
+      .catch(() => {
+        fetch("/api/content")
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.services && data.services.length > 0) {
+              setServices(data.services);
+            }
+          })
+          .catch(() => {});
+      });
 
     // Listen to hash changes for smooth scroll & active effect
     const handleHash = () => {
@@ -116,14 +102,7 @@ export default function ServicesPage() {
       <main className="flex-grow w-full relative z-10 pt-32 pb-24 px-6 md:px-12 max-w-7xl mx-auto flex flex-col gap-16">
         {/* Header with Smooth Scroll Reveal */}
         <section className="flex flex-col items-start max-w-3xl pt-8">
-          <ScrollReveal delay={0.05} yOffset={20}>
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-900 border border-zinc-800/80 text-xs font-semibold uppercase tracking-wider text-yellow-400 mb-6">
-              <span className="w-1.5 h-1.5 rounded-full bg-yellow-400" />
-              Our Services
-            </div>
-          </ScrollReveal>
-
-          <ScrollReveal delay={0.15} yOffset={25}>
+          <ScrollReveal delay={0.1} yOffset={25}>
             <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight leading-[1.08] mb-6">
               Designed for <span className="text-yellow-400">Growth, Quality,</span> and Impact.
             </h1>

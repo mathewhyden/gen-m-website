@@ -14,6 +14,7 @@ export interface ExpandCardItem {
   description: string;
   technologies: string[];
   liveUrl?: string;
+  slug?: string;
   badge?: string;
   actionLabel?: string;
 }
@@ -171,8 +172,41 @@ export default function ResponsiveExpandCards({
   onImageZoom,
   className = "",
 }: ResponsiveExpandCardsProps) {
+  // Guarantee strict deduplication by ID, title, and slug
+  const uniqueCards = React.useMemo(() => {
+    const seen = new Set<string>();
+    const result: ExpandCardItem[] = [];
+    for (const c of cards) {
+      if (!c) continue;
+      const idKey = (c.id || "").trim().toLowerCase();
+      const titleKey = (c.title || "").trim().toLowerCase().replace(/[^a-z0-9]/g, "");
+      const slugKey = (c.slug || "").trim().toLowerCase();
+
+      if (idKey && seen.has(`id:${idKey}`)) continue;
+      if (titleKey && seen.has(`title:${titleKey}`)) continue;
+      if (slugKey && seen.has(`slug:${slugKey}`)) continue;
+
+      if (idKey) seen.add(`id:${idKey}`);
+      if (titleKey) seen.add(`title:${titleKey}`);
+      if (slugKey) seen.add(`slug:${slugKey}`);
+
+      result.push({
+        ...c,
+        num: String(result.length + 1).padStart(2, "0"),
+      });
+    }
+    return result;
+  }, [cards]);
+
   // Default to the first card active so there is always a featured project showing
-  const [activeId, setActiveId] = useState<string>(cards[0]?.id || "web-card-1");
+  const [activeId, setActiveId] = useState<string>(uniqueCards[0]?.id || "web-card-1");
+
+  // Keep activeId valid when dynamic cards are loaded or updated
+  React.useEffect(() => {
+    if (uniqueCards.length > 0 && !uniqueCards.some((c) => c.id === activeId)) {
+      setActiveId(uniqueCards[0].id);
+    }
+  }, [uniqueCards, activeId]);
 
   return (
     <div className={`w-full flex flex-col gap-6 select-none ${className}`}>
@@ -181,7 +215,7 @@ export default function ResponsiveExpandCards({
           - Mobile (<md): Vertical accordion with height expansion
           - Smooth 600ms transitions with cubic-bezier easing */}
       <div className="w-full flex flex-col md:flex-row gap-3 sm:gap-4 h-[620px] md:h-[480px] lg:h-[520px] overflow-hidden rounded-3xl p-1">
-        {cards.map((card) => {
+        {uniqueCards.map((card) => {
           const isActive = activeId === card.id;
 
           return (
@@ -207,8 +241,9 @@ export default function ResponsiveExpandCards({
                   src={card.image}
                   alt={card.title}
                   fill
-                  priority={card.id.includes("1")}
+                  priority={card.id.includes("1") || card.num === "01"}
                   sizes="(max-width: 768px) 100vw, 50vw"
+                  unoptimized={card.image.startsWith("data:") || card.image.startsWith("http")}
                   className={`object-cover transition-transform duration-700 ease-out ${
                     isActive ? "scale-105" : "scale-100 group-hover:scale-105"
                   }`}
@@ -322,34 +357,47 @@ export default function ResponsiveExpandCards({
 
                 {/* Action Row */}
                 <div className="pt-3 border-t border-zinc-800/80 flex items-center justify-between gap-3">
-                  {card.liveUrl ? (
-                    <a
-                      href={card.liveUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={(e) => e.stopPropagation()}
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-400 text-black font-bold text-xs uppercase tracking-wider hover:bg-yellow-300 transition-all duration-300 shadow-lg hover:scale-105 active:scale-95"
-                    >
-                      <span>Visit Live Website</span>
-                      <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5]" />
-                    </a>
-                  ) : onImageZoom ? (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onImageZoom(card.image);
-                      }}
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-400 text-black font-bold text-xs uppercase tracking-wider hover:bg-yellow-300 transition-all duration-300 shadow-lg hover:scale-105 active:scale-95 cursor-pointer"
-                    >
-                      <span>{card.actionLabel || "View Full Resolution"}</span>
-                      <ZoomIn className="w-3.5 h-3.5 stroke-[2.5]" />
-                    </button>
-                  ) : (
-                    <span className="text-xs text-zinc-400 font-mono">
-                      Design Showcase
-                    </span>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {card.liveUrl ? (
+                      <a
+                        href={card.liveUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-400 text-black font-bold text-xs uppercase tracking-wider hover:bg-yellow-300 transition-all duration-300 shadow-lg hover:scale-105 active:scale-95"
+                      >
+                        <span>Visit Live Website</span>
+                        <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.5]" />
+                      </a>
+                    ) : onImageZoom ? (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onImageZoom(card.image);
+                        }}
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-400 text-black font-bold text-xs uppercase tracking-wider hover:bg-yellow-300 transition-all duration-300 shadow-lg hover:scale-105 active:scale-95 cursor-pointer"
+                      >
+                        <span>{card.actionLabel || "View Full Resolution"}</span>
+                        <ZoomIn className="w-3.5 h-3.5 stroke-[2.5]" />
+                      </button>
+                    ) : (
+                      <span className="text-xs text-zinc-400 font-mono">
+                        Design Showcase
+                      </span>
+                    )}
+
+                    {card.slug && (
+                      <a
+                        href={`/work/${card.slug}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full bg-zinc-900 hover:bg-zinc-800 text-zinc-300 hover:text-yellow-400 font-mono text-xs transition-colors border border-zinc-800"
+                      >
+                        <span>Case Study</span>
+                        <ArrowUpRight className="w-3 h-3" />
+                      </a>
+                    )}
+                  </div>
 
                   <span className="text-[11px] font-mono text-zinc-400 hidden sm:inline-flex items-center gap-1">
                     <Eye className="w-3 h-3 text-yellow-400" />

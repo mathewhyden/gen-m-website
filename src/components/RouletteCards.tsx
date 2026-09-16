@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
 import { useTheme } from "@/lib/ThemeContext";
 
 export interface ServiceCardData {
@@ -183,11 +182,24 @@ export default function RouletteCards({
   };
 
   // Dynamic 3D roulette coordinate calculation
-  // Calculates translateX, translateY, scale, rotate, opacity, and zIndex for exactly 5 cards
+  // Calculates translateX, translateY, scale, rotate, opacity, and zIndex for dynamic cards
   const getCardTransform = useCallback(
     (cardIndex: number) => {
-      // Offset relative to the active card (0 = main/front, 1 = right, 2 = far-right/back, 3 = top-back, 4 = left)
-      const offset = (cardIndex - activeIndex + services.length) % services.length;
+      const count = services.length;
+      if (count <= 1) {
+        return {
+          x: 0,
+          y: 0,
+          scale: 1.0,
+          rotate: 0,
+          opacity: 1.0,
+          zIndex: 30,
+          pointerEvents: "auto" as const,
+        };
+      }
+
+      // Offset relative to the active card
+      const offset = (cardIndex - activeIndex + count) % count;
 
       // Responsive scale multipliers
       const isMobile = viewportWidth < 640;
@@ -196,72 +208,73 @@ export default function RouletteCards({
       const spreadMultiplier = isMobile ? 0.38 : isTablet ? 0.72 : 1.0;
       const verticalMultiplier = isMobile ? 0.45 : isTablet ? 0.75 : 1.0;
 
-      switch (offset) {
-        case 0:
-          // MAIN / FRONT CARD: Large, visually dominant, scale 1.0, 0deg, opacity 1.0, highest z-index
-          return {
-            x: 0,
-            y: 0,
-            scale: 1.0,
-            rotate: 0,
-            opacity: 1.0,
-            zIndex: 30,
-            pointerEvents: "auto" as const,
-          };
-        case 1:
-          // Card 2 (Right side): Slightly smaller, tilted slightly right
-          return {
-            x: 275 * spreadMultiplier,
-            y: 20 * verticalMultiplier,
-            scale: isMobile ? 0.82 : 0.88,
-            rotate: 4.5,
-            opacity: 0.85,
-            zIndex: 20,
-            pointerEvents: "auto" as const,
-          };
-        case 2:
-          // Card 5 (Far Right / moving toward back): Smaller, more transparent, behind
-          return {
-            x: 395 * spreadMultiplier,
-            y: -26 * verticalMultiplier,
-            scale: isMobile ? 0.72 : 0.78,
-            rotate: 7.5,
-            opacity: isMobile ? 0.25 : 0.45,
-            zIndex: 10,
-            pointerEvents: "auto" as const,
-          };
-        case 3:
-          // Card 4 (Center-Back / top): Background focal depth, smaller, lowest layer
-          return {
-            x: -145 * spreadMultiplier,
-            y: -48 * verticalMultiplier,
-            scale: isMobile ? 0.70 : 0.75,
-            rotate: -6,
-            opacity: isMobile ? 0.22 : 0.40,
-            zIndex: 8,
-            pointerEvents: "auto" as const,
-          };
-        case 4:
-          // Card 3 (Left side): Slightly smaller, tilted slightly left, ready to rotate
-          return {
-            x: -275 * spreadMultiplier,
-            y: 18 * verticalMultiplier,
-            scale: isMobile ? 0.82 : 0.88,
-            rotate: -4.5,
-            opacity: 0.85,
-            zIndex: 20,
-            pointerEvents: "auto" as const,
-          };
-        default:
-          return {
-            x: 0,
-            y: 0,
-            scale: 0.8,
-            rotate: 0,
-            opacity: 0.5,
-            zIndex: 10,
-            pointerEvents: "auto" as const,
-          };
+      if (offset === 0) {
+        // MAIN / FRONT CARD
+        return {
+          x: 0,
+          y: 0,
+          scale: 1.0,
+          rotate: 0,
+          opacity: 1.0,
+          zIndex: 30,
+          pointerEvents: "auto" as const,
+        };
+      } else if (offset === 1) {
+        // Immediate Right
+        return {
+          x: 275 * spreadMultiplier,
+          y: 20 * verticalMultiplier,
+          scale: isMobile ? 0.82 : 0.88,
+          rotate: 4.5,
+          opacity: 0.85,
+          zIndex: 20,
+          pointerEvents: "auto" as const,
+        };
+      } else if (offset === count - 1) {
+        // Immediate Left
+        return {
+          x: -275 * spreadMultiplier,
+          y: 18 * verticalMultiplier,
+          scale: isMobile ? 0.82 : 0.88,
+          rotate: -4.5,
+          opacity: 0.85,
+          zIndex: 20,
+          pointerEvents: "auto" as const,
+        };
+      } else if (offset === 2 && count > 3) {
+        // Far Right
+        return {
+          x: 395 * spreadMultiplier,
+          y: -26 * verticalMultiplier,
+          scale: isMobile ? 0.72 : 0.78,
+          rotate: 7.5,
+          opacity: isMobile ? 0.25 : 0.45,
+          zIndex: 10,
+          pointerEvents: "auto" as const,
+        };
+      } else if (offset === count - 2 && count > 4) {
+        // Far Left
+        return {
+          x: -395 * spreadMultiplier,
+          y: -26 * verticalMultiplier,
+          scale: isMobile ? 0.72 : 0.78,
+          rotate: -7.5,
+          opacity: isMobile ? 0.25 : 0.45,
+          zIndex: 10,
+          pointerEvents: "auto" as const,
+        };
+      } else {
+        // Background Center / Depth
+        const side = offset % 2 === 0 ? 1 : -1;
+        return {
+          x: side * 145 * spreadMultiplier,
+          y: -48 * verticalMultiplier,
+          scale: isMobile ? 0.70 : 0.75,
+          rotate: side * 5,
+          opacity: isMobile ? 0.20 : 0.35,
+          zIndex: 8,
+          pointerEvents: "auto" as const,
+        };
       }
     },
     [activeIndex, services.length, viewportWidth]
@@ -273,7 +286,7 @@ export default function RouletteCards({
   const cardHeight =
     viewportWidth < 640 ? 460 : viewportWidth < 1024 ? 490 : 530;
 
-  const currentService = services[activeIndex];
+  const currentService = services[activeIndex] || services[0] || defaultServices[0];
 
   return (
     <div
@@ -292,22 +305,22 @@ export default function RouletteCards({
           <span className="font-mono text-xs font-black text-yellow-400 tracking-wider">
             {currentService.number}
           </span>
-          <span className="font-mono text-xs text-zinc-600">/ 05</span>
+          <span className="font-mono text-xs text-zinc-600">/ {String(services.length).padStart(2, "0")}</span>
           <span className="text-zinc-700 text-xs">•</span>
           <span className="text-xs font-mono uppercase tracking-wider text-zinc-400">
             {currentService.category}
           </span>
         </div>
 
-        {/* 5-Card Step Indicator Dots */}
+        {/* Step Indicator Dots */}
         <div className="flex items-center gap-1.5 sm:gap-2">
           {services.map((s, idx) => {
             const isCurrent = activeIndex === idx;
             return (
               <button
-                key={s.number}
+                key={s.number || idx}
                 type="button"
-                id={`roulette-step-${s.number}`}
+                id={`roulette-step-${s.number || idx}`}
                 onClick={() => setActiveIndex(idx)}
                 aria-label={`Select service ${s.number}: ${s.title}`}
                 className={`h-1.5 rounded-full transition-all duration-500 cursor-pointer ${
@@ -347,15 +360,15 @@ export default function RouletteCards({
           aria-hidden="true"
         />
 
-        {/* EXACTLY 5 CARDS: Continuously Rotating Around the Central Focal Point */}
+        {/* CARDS: Continuously Rotating Around the Central Focal Point */}
         {services.map((service, index) => {
           const transform = getCardTransform(index);
           const isMain = index === activeIndex;
 
           return (
             <motion.div
-              key={service.number}
-              id={`roulette-card-${service.number}`}
+              key={service.slug || service.number || index}
+              id={`roulette-card-${service.number || index}`}
               onClick={() => {
                 if (isMain) {
                   handleExplore(service);
@@ -407,10 +420,10 @@ export default function RouletteCards({
                   >
                     {service.number}
                   </span>
-                  <span className="text-zinc-600 font-mono text-xs">/ 05</span>
+                  <span className="text-zinc-600 font-mono text-xs">/ {String(services.length).padStart(2, "0")}</span>
                 </div>
 
-                <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-wider text-zinc-400 px-2.5 py-0.5 rounded-full border border-zinc-800 bg-zinc-900/60">
+                <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-wider text-zinc-400 px-2.5 py-0.5 rounded-full border border-zinc-800 bg-zinc-900/60 truncate max-w-[140px]">
                   {service.category}
                 </span>
               </div>
@@ -425,9 +438,10 @@ export default function RouletteCards({
                 </div>
 
                 <Image
-                  src={service.image}
+                  src={service.image || "/services/web-development.jpg"}
                   alt={service.title}
                   fill
+                  unoptimized={Boolean(service.image?.startsWith("data:") || service.image?.startsWith("http"))}
                   sizes="(max-width: 640px) 280px, 385px"
                   className="object-cover transition-transform duration-700 group-hover/img:scale-105"
                   priority={index === activeIndex}
@@ -449,28 +463,6 @@ export default function RouletteCards({
                 <p className="text-xs sm:text-sm text-zinc-400 font-normal leading-relaxed line-clamp-2">
                   {service.description}
                 </p>
-
-                <div className="pt-2 flex items-center justify-between">
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleExplore(service);
-                    }}
-                    className={`inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
-                      isMain
-                        ? "text-yellow-400 hover:text-yellow-300"
-                        : "text-zinc-500 hover:text-zinc-300"
-                    }`}
-                  >
-                    <span>{service.ctaText || "Explore Service"}</span>
-                    <ArrowRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1" />
-                  </button>
-
-                  <span className="text-[10px] font-mono text-zinc-600 uppercase">
-                    GEN-M SUITE
-                  </span>
-                </div>
               </div>
             </motion.div>
           );

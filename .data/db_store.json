@@ -3,5 +3,38 @@
   "enquiries": [],
   "expenses": [],
   "payments": [],
-  "invoices": []
+  "invoices": [
+    {
+      "id": "inv-1789137029959-w3r9u",
+      "invoiceNumber": "GM-2026-001",
+      "projectId": "prj-1",
+      "projectName": "Hebe Art Studio",
+      "clientId": "usr-client-1",
+      "clientName": "Sindhuja Ramesh",
+      "clientEmail": "mathewhyden028@gmail.com",
+      "clientCompany": "Hebe Art Studio",
+      "clientAddress": "",
+      "items": [
+        {
+          "id": "it-1789137029959-1",
+          "description": "Custom Milestone Payment",
+          "quantity": 1,
+          "rate": 95000,
+          "unitPrice": 95000,
+          "amount": 95000
+        }
+      ],
+      "subtotal": 95000,
+      "tax": 0,
+      "discount": 0,
+      "total": 95000,
+      "totalAmount": 95000,
+      "currency": "INR",
+      "issueDate": "2026-09-11",
+      "dueDate": "2026-09-25",
+      "status": "sent",
+      "notes": "Thank you for choosing Gen-M Tech.",
+      "createdAt": "2026-09-11T14:30:29.960Z"
+    }
+  ]
 }
